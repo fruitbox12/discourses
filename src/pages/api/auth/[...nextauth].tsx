@@ -11,7 +11,7 @@ export default NextAuth({
             version: '2.0',
         }),
     ],
-
+    secret: process.env.NEXTAUTH_SECRET!,
     callbacks: {
         async session({ session, user, token }) {
             (session as any).user.username = token.username;
