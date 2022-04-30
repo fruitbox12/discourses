@@ -1,0 +1,284 @@
+export const FundDiscourseIcon = () => {
+    return (
+        <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.5 11.4002C8.5 12.1702 9.1 12.8002 9.83 12.8002H11.33C11.97 12.8002 12.49 12.2502 12.49 11.5802C12.49 10.8502 12.17 10.5902 11.7 10.4202L9.3 9.58016C8.82 9.41016 8.5 9.15016 8.5 8.42016C8.5 7.75016 9.02 7.20016 9.66 7.20016H11.16C11.9 7.21016 12.5 7.83016 12.5 8.60016M10.5 12.8502V13.5902M10.5 6.41016V7.19016" stroke="url(#paint0_linear_600_2469)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M13.48 19.88C14.38 21.15 15.85 21.98 17.53 21.98C20.26 21.98 22.48 19.76 22.48 17.03C22.48 15.37 21.66 13.9 20.41 13M10.49 17.98C12.6091 17.98 14.6414 17.1382 16.1398 15.6398C17.6382 14.1414 18.48 12.1091 18.48 9.99C18.48 7.87092 17.6382 5.83863 16.1398 4.34022C14.6414 2.8418 12.6091 2 10.49 2C8.37092 2 6.33863 2.8418 4.84022 4.34022C3.3418 5.83863 2.5 7.87092 2.5 9.99C2.5 12.1091 3.3418 14.1414 4.84022 15.6398C6.33863 17.1382 8.37092 17.98 10.49 17.98V17.98Z" stroke="url(#paint1_linear_600_2469)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <defs>
+                <linearGradient id="paint0_linear_600_2469" x1="8.5" y1="8.11208" x2="12.7387" y2="8.45487" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#84B9D1" />
+                    <stop offset="1" stopColor="#D2B4FC" />
+                </linearGradient>
+                <linearGradient id="paint1_linear_600_2469" x1="2.5" y1="6.736" x2="23.3709" y2="9.76574" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#84B9D1" />
+                    <stop offset="1" stopColor="#D2B4FC" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+    )
+}
+
+export const DiscourseIcon = () => {
+    return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 6.25V11.35C22 12.62 21.58 13.69 20.83 14.43C20.09 15.18 19.02 15.6 17.75 15.6V17.41C17.75 18.09 16.99 18.5 16.43 18.12L15.46 17.48C15.55 17.17 15.59 16.83 15.59 16.47V12.4C15.59 10.36 14.23 9 12.19 9H5.4C5.26 9 5.13 9.01 5 9.02V6.25C5 3.7 6.7 2 9.25 2H17.75C20.3 2 22 3.7 22 6.25Z" stroke="url(#paint0_linear_602_2472)" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M15.59 12.4V16.47C15.59 16.83 15.55 17.17 15.46 17.48C15.09 18.95 13.87 19.87 12.19 19.87H9.47L6.45 21.88C6.34876 21.9493 6.23046 21.9895 6.10796 21.9963C5.98547 22.003 5.86346 21.9761 5.75521 21.9184C5.64695 21.8606 5.5566 21.7743 5.49398 21.6688C5.43135 21.5633 5.39885 21.4427 5.4 21.32V19.87C4.38 19.87 3.53 19.53 2.94 18.94C2.34 18.34 2 17.49 2 16.47V12.4C2 10.5 3.18 9.19 5 9.02C5.13 9.01 5.26 9 5.4 9H12.19C14.23 9 15.59 10.36 15.59 12.4V12.4Z" stroke="url(#paint1_linear_602_2472)" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+            <defs>
+                <linearGradient id="paint0_linear_602_2472" x1="5" y1="5.85549" x2="22.7242" y2="8.54466" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#84B9D1" />
+                    <stop offset="1" stopColor="#D2B4FC" />
+                </linearGradient>
+                <linearGradient id="paint1_linear_602_2472" x1="2" y1="12.0808" x2="16.1687" y2="14.2314" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#84B9D1" />
+                    <stop offset="1" stopColor="#D2B4FC" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+    )
+}
+
+export const CloseIcon = () => {
+    return (
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.66699 13.3327L13.3337 6.66602M13.3337 13.3327L6.66699 6.66602" stroke="#C6C6C6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+    )
+}
+
+export const FooterIcon = () => {
+    return (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fillRule="evenodd" clipRule="evenodd" d="M13.0944 2.21883H3.0455L3.71618 0H12.4246L13.0944 2.21883ZM15.9999 3.29642H0.141085L1.1984 5.51525H14.9426L15.9999 3.29642ZM5.07607 12.8518L5.72834 6.59375H2.91059L2.25919 12.8518H5.07607ZM10.9284 12.8518H13.7418L13.0904 6.59375H10.2753L10.9284 12.8518ZM16 15.9998H0L1.06696 13.9292H14.9339L16 15.9998ZM6.26333 12.8518H9.74037L9.16086 6.59375H6.84283L6.26333 12.8518Z" fill="url(#paint0_linear_526_1569)" />
+            <defs>
+                <linearGradient id="paint0_linear_526_1569" x1="-4.40306e-08" y1="3.79256" x2="16.7134" y2="6.2188" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#84B9D1" />
+                    <stop offset="1" stopColor="#D2B4FC" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+    )
+}
+
+export const TwitterIcon = () => {
+    return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.1623 5.65593C21.3989 5.99362 20.5893 6.2154 19.7603 6.31393C20.634 5.79136 21.288 4.96894 21.6003 3.99993C20.7803 4.48793 19.8813 4.82993 18.9443 5.01493C18.3149 4.34151 17.4807 3.89489 16.5713 3.74451C15.6618 3.59413 14.7282 3.74842 13.9156 4.18338C13.1029 4.61834 12.4567 5.30961 12.0774 6.14972C11.6981 6.98983 11.607 7.93171 11.8183 8.82893C10.1554 8.74558 8.52863 8.31345 7.04358 7.56059C5.55854 6.80773 4.24842 5.75097 3.1983 4.45893C2.82659 5.09738 2.63125 5.82315 2.6323 6.56193C2.6323 8.01193 3.3703 9.29293 4.4923 10.0429C3.82831 10.022 3.17893 9.84271 2.5983 9.51993V9.57193C2.5985 10.5376 2.93267 11.4735 3.54414 12.221C4.15562 12.9684 5.00678 13.4814 5.9533 13.6729C5.33691 13.84 4.6906 13.8646 4.0633 13.7449C4.33016 14.5762 4.8503 15.3031 5.55089 15.824C6.25147 16.3449 7.09742 16.6337 7.9703 16.6499C7.10278 17.3313 6.10947 17.8349 5.04718 18.1321C3.98488 18.4293 2.87442 18.5142 1.7793 18.3819C3.69099 19.6114 5.91639 20.264 8.1893 20.2619C15.8823 20.2619 20.0893 13.8889 20.0893 8.36193C20.0893 8.18193 20.0843 7.99993 20.0763 7.82193C20.8952 7.23009 21.6019 6.49695 22.1633 5.65693L22.1623 5.65593Z" fill="#1DA1F2" />
+        </svg>
+
+    )
+}
+
+export const AgoraBtnIcon = () => {
+    return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fillRule="evenodd" clipRule="evenodd" d="M18.3682 4.77354H5.80712L6.64548 2H17.531L18.3682 4.77354ZM22 6.12053H2.17645L3.49809 8.89407H20.6784L22 6.12053ZM8.34521 18.0647L9.16055 10.2422H5.63836L4.82411 18.0647H8.34521ZM15.6603 18.0647H19.177L18.3627 10.2422H14.8438L15.6603 18.0647ZM22 22H2L3.3337 19.4117H20.6674L22 22ZM9.82903 18.0647H14.1753L13.451 10.2422H10.5534L9.82903 18.0647Z" fill="black" />
+        </svg>
+
+
+    )
+}
+
+export const Twitter_x10 = () => {
+    return (
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9.23511 2.35688C8.917 2.49759 8.57967 2.58999 8.23427 2.63105C8.59833 2.41331 8.87082 2.07064 9.00094 1.66688C8.65927 1.87021 8.28469 2.01271 7.89427 2.0898C7.63202 1.8092 7.28442 1.62311 6.9055 1.56046C6.52658 1.4978 6.13758 1.56208 5.79897 1.74332C5.46035 1.92455 5.1911 2.21258 5.03307 2.56263C4.87504 2.91267 4.83708 3.30512 4.9251 3.67896C4.23223 3.64424 3.55441 3.46418 2.93564 3.15049C2.31687 2.8368 1.77099 2.39648 1.33344 1.85813C1.17856 2.12415 1.09717 2.42656 1.0976 2.73438C1.0976 3.33855 1.4051 3.8723 1.8726 4.1848C1.59594 4.17609 1.32537 4.10137 1.08344 3.96688V3.98855C1.08352 4.39092 1.22276 4.78089 1.47754 5.09232C1.73232 5.40376 2.08697 5.6175 2.48135 5.6973C2.22453 5.7669 1.95523 5.77715 1.69385 5.7273C1.80505 6.07364 2.02177 6.37655 2.31368 6.59359C2.60559 6.81064 2.95807 6.93096 3.32177 6.93771C2.9603 7.2216 2.54643 7.43146 2.1038 7.55529C1.66118 7.67911 1.19849 7.71449 0.742188 7.65938C1.53873 8.17164 2.46598 8.4436 3.41302 8.44271C6.61844 8.44271 8.37136 5.7873 8.37136 3.48438C8.37136 3.40938 8.36927 3.33355 8.36594 3.25938C8.70713 3.01278 9.0016 2.70731 9.23552 2.3573L9.23511 2.35688Z" fill="#1DA1F2" />
+        </svg>
+
+    )
+}
+
+export const ParticipateIcon = () => {
+    return (
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 1.5V6M9 6L10.5 4.5M9 6L7.5 4.5" stroke="url(#paint0_linear_672_2549)" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M3.75 8.9993V5.9993C3.75 4.4918 3.75 3.2468 6 3.0293M14.25 8.9993V5.9993C14.25 4.4918 14.25 3.2468 12 3.0293M5.25 8.9993C2.25 8.9993 2.25 10.3418 2.25 11.9993V12.7493C2.25 14.8193 2.25 16.4993 6 16.4993H12C15 16.4993 15.75 14.8193 15.75 12.7493V11.9993C15.75 10.3418 15.75 8.9993 12.75 8.9993C12 8.9993 11.79 9.1568 11.4 9.4493L10.635 10.2593C10.4247 10.483 10.1708 10.6613 9.88894 10.7832C9.60711 10.905 9.3033 10.9679 8.99625 10.9679C8.6892 10.9679 8.38539 10.905 8.10356 10.7832C7.82172 10.6613 7.56782 10.483 7.3575 10.2593L6.6 9.4493C6.21 9.1568 6 8.9993 5.25 8.9993Z" stroke="url(#paint1_linear_672_2549)" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+            <defs>
+                <linearGradient id="paint0_linear_672_2549" x1="7.5" y1="2.56667" x2="10.6701" y2="2.87346" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#84B9D1" />
+                    <stop offset="1" stopColor="#D2B4FC" />
+                </linearGradient>
+                <linearGradient id="paint1_linear_672_2549" x1="2.25" y1="6.22219" x2="16.3507" y2="8.27368" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#84B9D1" />
+                    <stop offset="1" stopColor="#D2B4FC" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+    )
+}
+
+export const RightArrowGradient = () => {
+    return (
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.8225 4.44727L15.375 8.99977L10.8225 13.5523M2.625 8.99977H15.2475" stroke="url(#paint0_linear_672_2559)" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+            <defs>
+                <linearGradient id="paint0_linear_672_2559" x1="2.625" y1="6.60549" x2="15.6845" y2="9.26023" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#84B9D1" />
+                    <stop offset="1" stopColor="#D2B4FC" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+    )
+}
+
+export const ParticipatedIcon = () => {
+    return (
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.98242 11.0254L8.10742 12.1504L11.1074 9.15039" stroke="url(#paint0_linear_689_2682)" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M7.5 4.5H10.5C12 4.5 12 3.75 12 3C12 1.5 11.25 1.5 10.5 1.5H7.5C6.75 1.5 6 1.5 6 3C6 4.5 6.75 4.5 7.5 4.5Z" stroke="url(#paint1_linear_689_2682)" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M12 3.01562C14.4975 3.15063 15.75 4.07312 15.75 7.50063V12.0006C15.75 15.0006 15 16.5006 11.25 16.5006H6.75C3 16.5006 2.25 15.0006 2.25 12.0006V7.50063C2.25 4.08063 3.5025 3.15063 6 3.01562" stroke="url(#paint2_linear_689_2682)" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+            <defs>
+                <linearGradient id="paint0_linear_689_2682" x1="6.98242" y1="9.8615" x2="11.2136" y2="10.7061" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#84B9D1" />
+                    <stop offset="1" stopColor="#D2B4FC" />
+                </linearGradient>
+                <linearGradient id="paint1_linear_689_2682" x1="6" y1="2.21111" x2="11.9021" y2="3.92468" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#84B9D1" />
+                    <stop offset="1" stopColor="#D2B4FC" />
+                </linearGradient>
+                <linearGradient id="paint2_linear_689_2682" x1="2.25" y1="6.21207" x2="16.3513" y2="8.26138" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#84B9D1" />
+                    <stop offset="1" stopColor="#D2B4FC" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+    )
+}
+
+export const SpeakerConfirmationIcon = () => {
+    return (
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.8298 14.2875L11.9698 15.4275L14.2498 13.1475M8.99229 16.3575C7.62728 16.3575 6.26979 16.0125 5.23479 15.3225C3.41979 14.1075 3.41979 12.1275 5.23479 10.92C7.29729 9.54 10.6798 9.54 12.7423 10.92M9.11979 8.1525C9.04479 8.145 8.95479 8.145 8.87229 8.1525C8.01144 8.12327 7.19577 7.76013 6.59801 7.13997C6.00025 6.51981 5.66734 5.69134 5.66979 4.83C5.6686 4.393 5.75368 3.96006 5.92014 3.556C6.0866 3.15194 6.33117 2.7847 6.63983 2.47535C6.94849 2.16599 7.31517 1.92059 7.71885 1.75322C8.12253 1.58585 8.55528 1.4998 8.99229 1.5C10.8298 1.5 12.3223 2.9925 12.3223 4.83C12.3223 6.63 10.8973 8.0925 9.11979 8.1525Z" stroke="#212221" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+    )
+}
+
+export const SlotCalendarIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 1.5V3.75V1.5ZM12 1.5V3.75V1.5ZM2.625 6.8175H15.375H2.625ZM15.75 6.375V12.75C15.75 15 14.625 16.5 12 16.5H6C3.375 16.5 2.25 15 2.25 12.75V6.375C2.25 4.125 3.375 2.625 6 2.625H12C14.625 2.625 15.75 4.125 15.75 6.375Z" stroke="url(#paint0_linear_822_3021)" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M6.22046 12.5254H6.22796M8.99621 10.2754H9.00371H8.99621ZM6.22046 10.2754H6.22796H6.22046Z" stroke="url(#paint1_linear_822_3021)" strokeLinecap="round" strokeLinejoin="round" />
+        <defs>
+            <linearGradient id="paint0_linear_822_3021" x1="2.25" y1="5.05556" x2="16.4075" y2="6.90522" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#84B9D1" />
+                <stop offset="1" stopColor="#D2B4FC" />
+            </linearGradient>
+            <linearGradient id="paint1_linear_822_3021" x1="6.22046" y1="10.8087" x2="9.09634" y2="11.3251" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#84B9D1" />
+                <stop offset="1" stopColor="#D2B4FC" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+)
+
+export const SlotItemIcon = ({ active }: { active?: boolean | false }) => {
+    if (!active) {
+        return (
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.8333 11.734H2.16667M5.33333 1.33398V3.33398V1.33398ZM10.6667 1.33398V3.33398V1.33398ZM10.6667 2.33398C12.8867 2.45398 14 3.30065 14 6.43398V10.554C14 13.3007 13.3333 14.674 10 14.674H6C2.66667 14.674 2 13.3007 2 10.554V6.43398C2 3.30065 3.11333 2.46065 5.33333 2.33398H10.6667Z" stroke="#797979" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M7.99992 5.5C7.17992 5.5 6.48658 5.94667 6.48658 6.81333C6.48658 7.22667 6.67992 7.54 6.97325 7.74C6.56659 7.98 6.33325 8.36667 6.33325 8.82C6.33325 9.64667 6.96659 10.16 7.99992 10.16C9.02659 10.16 9.66659 9.64667 9.66659 8.82C9.66659 8.36667 9.43325 7.97333 9.01992 7.74C9.31992 7.53333 9.50659 7.22667 9.50659 6.81333C9.50659 5.94667 8.81992 5.5 7.99992 5.5V5.5ZM7.99992 7.39333C7.65325 7.39333 7.39992 7.18667 7.39992 6.86C7.39992 6.52667 7.65325 6.33333 7.99992 6.33333C8.34659 6.33333 8.59992 6.52667 8.59992 6.86C8.59992 7.18667 8.34659 7.39333 7.99992 7.39333ZM7.99992 9.33333C7.55992 9.33333 7.23992 9.11333 7.23992 8.71333C7.23992 8.31333 7.55992 8.1 7.99992 8.1C8.43992 8.1 8.75992 8.32 8.75992 8.71333C8.75992 9.11333 8.43992 9.33333 7.99992 9.33333Z" fill="#797979" />
+            </svg>
+
+        )
+    }
+    return (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M13.8333 11.734H2.16667M5.33333 1.33398V3.33398V1.33398ZM10.6667 1.33398V3.33398V1.33398ZM10.6667 2.33398C12.8867 2.45398 14 3.30065 14 6.43398V10.554C14 13.3007 13.3333 14.674 10 14.674H6C2.66667 14.674 2 13.3007 2 10.554V6.43398C2 3.30065 3.11333 2.46065 5.33333 2.33398H10.6667Z" stroke="url(#paint0_linear_903_4127)" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M7.99992 5.5C7.17992 5.5 6.48658 5.94667 6.48658 6.81333C6.48658 7.22667 6.67992 7.54 6.97325 7.74C6.56659 7.98 6.33325 8.36667 6.33325 8.82C6.33325 9.64667 6.96659 10.16 7.99992 10.16C9.02659 10.16 9.66659 9.64667 9.66659 8.82C9.66659 8.36667 9.43325 7.97333 9.01992 7.74C9.31992 7.53333 9.50659 7.22667 9.50659 6.81333C9.50659 5.94667 8.81992 5.5 7.99992 5.5V5.5ZM7.99992 7.39333C7.65325 7.39333 7.39992 7.18667 7.39992 6.86C7.39992 6.52667 7.65325 6.33333 7.99992 6.33333C8.34659 6.33333 8.59992 6.52667 8.59992 6.86C8.59992 7.18667 8.34659 7.39333 7.99992 7.39333ZM7.99992 9.33333C7.55992 9.33333 7.23992 9.11333 7.23992 8.71333C7.23992 8.31333 7.55992 8.1 7.99992 8.1C8.43992 8.1 8.75992 8.32 8.75992 8.71333C8.75992 9.11333 8.43992 9.33333 7.99992 9.33333Z" fill="url(#paint1_linear_903_4127)" />
+            <defs>
+                <linearGradient id="paint0_linear_903_4127" x1="2" y1="4.49606" x2="14.5846" y2="6.13941" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#84B9D1" />
+                    <stop offset="1" stopColor="#D2B4FC" />
+                </linearGradient>
+                <linearGradient id="paint1_linear_903_4127" x1="6.33325" y1="6.60459" x2="9.85066" y2="6.96983" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#84B9D1" />
+                    <stop offset="1" stopColor="#D2B4FC" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+    )
+}
+
+export const SpeakerOneCIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8.00016 1.33203C4.32016 1.33203 1.3335 4.3187 1.3335 7.9987C1.3335 11.6787 4.32016 14.6654 8.00016 14.6654C11.6802 14.6654 14.6668 11.6787 14.6668 7.9987C14.6668 4.3187 11.6802 1.33203 8.00016 1.33203ZM4.50016 9.42536C4.50016 9.6987 4.2735 9.92536 4.00016 9.92536C3.72683 9.92536 3.50016 9.6987 3.50016 9.42536V6.57203C3.50016 6.2987 3.72683 6.07203 4.00016 6.07203C4.2735 6.07203 4.50016 6.2987 4.50016 6.57203V9.42536ZM6.50016 10.3787C6.50016 10.652 6.2735 10.8787 6.00016 10.8787C5.72683 10.8787 5.50016 10.652 5.50016 10.3787V5.6187C5.50016 5.34536 5.72683 5.1187 6.00016 5.1187C6.2735 5.1187 6.50016 5.34536 6.50016 5.6187V10.3787ZM8.50016 11.332C8.50016 11.6054 8.2735 11.832 8.00016 11.832C7.72683 11.832 7.50016 11.6054 7.50016 11.332V4.66536C7.50016 4.39203 7.72683 4.16536 8.00016 4.16536C8.2735 4.16536 8.50016 4.39203 8.50016 4.66536V11.332ZM10.5002 10.3787C10.5002 10.652 10.2735 10.8787 10.0002 10.8787C9.72683 10.8787 9.50016 10.652 9.50016 10.3787V5.6187C9.50016 5.34536 9.72683 5.1187 10.0002 5.1187C10.2735 5.1187 10.5002 5.34536 10.5002 5.6187V10.3787ZM12.5002 9.42536C12.5002 9.6987 12.2735 9.92536 12.0002 9.92536C11.7268 9.92536 11.5002 9.6987 11.5002 9.42536V6.57203C11.5002 6.2987 11.7268 6.07203 12.0002 6.07203C12.2735 6.07203 12.5002 6.2987 12.5002 6.57203V9.42536Z" fill="#D2B4FC" />
+    </svg>
+
+)
+export const SpeakerTwoCIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8.00016 1.33203C4.32016 1.33203 1.3335 4.3187 1.3335 7.9987C1.3335 11.6787 4.32016 14.6654 8.00016 14.6654C11.6802 14.6654 14.6668 11.6787 14.6668 7.9987C14.6668 4.3187 11.6802 1.33203 8.00016 1.33203ZM4.50016 9.42536C4.50016 9.6987 4.2735 9.92536 4.00016 9.92536C3.72683 9.92536 3.50016 9.6987 3.50016 9.42536V6.57203C3.50016 6.2987 3.72683 6.07203 4.00016 6.07203C4.2735 6.07203 4.50016 6.2987 4.50016 6.57203V9.42536ZM6.50016 10.3787C6.50016 10.652 6.2735 10.8787 6.00016 10.8787C5.72683 10.8787 5.50016 10.652 5.50016 10.3787V5.6187C5.50016 5.34536 5.72683 5.1187 6.00016 5.1187C6.2735 5.1187 6.50016 5.34536 6.50016 5.6187V10.3787ZM8.50016 11.332C8.50016 11.6054 8.2735 11.832 8.00016 11.832C7.72683 11.832 7.50016 11.6054 7.50016 11.332V4.66536C7.50016 4.39203 7.72683 4.16536 8.00016 4.16536C8.2735 4.16536 8.50016 4.39203 8.50016 4.66536V11.332ZM10.5002 10.3787C10.5002 10.652 10.2735 10.8787 10.0002 10.8787C9.72683 10.8787 9.50016 10.652 9.50016 10.3787V5.6187C9.50016 5.34536 9.72683 5.1187 10.0002 5.1187C10.2735 5.1187 10.5002 5.34536 10.5002 5.6187V10.3787ZM12.5002 9.42536C12.5002 9.6987 12.2735 9.92536 12.0002 9.92536C11.7268 9.92536 11.5002 9.6987 11.5002 9.42536V6.57203C11.5002 6.2987 11.7268 6.07203 12.0002 6.07203C12.2735 6.07203 12.5002 6.2987 12.5002 6.57203V9.42536Z" fill="#84B9D1" />
+    </svg>
+
+)
+
+export const HappeningIconGreen = () => (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15.75 6.1875V11.8125M2.25 6.1875V11.8125V6.1875ZM5.625 4.3125V13.6875V4.3125ZM9 2.4375V15.5625V2.4375ZM12.375 4.3125V13.6875V4.3125Z" stroke="url(#paint0_linear_1045_5263)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <defs>
+            <linearGradient id="paint0_linear_1045_5263" x1="2.25" y1="9" x2="15.75" y2="9" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#FBED96" />
+                <stop offset="1" stopColor="#ABECD6" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+)
+
+export const ArrowGRightIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.8225 4.44727L15.375 8.99977L10.8225 13.5523M2.625 8.99977H15.2475" stroke="url(#paint0_linear_818_3337)" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+<defs>
+<linearGradient id="paint0_linear_818_3337" x1="2.625" y1="8.99977" x2="15.375" y2="8.99977" gradientUnits="userSpaceOnUse">
+<stop stopColor="#FBED96"/>
+<stop offset="1" stopColor="#ABECD6"/>
+</linearGradient>
+</defs>
+</svg>
+
+)
+export const ArrowRightIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.8225 4.44727L15.375 8.99977L10.8225 13.5523M2.625 8.99977H15.2475" stroke="#212427" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+<defs>
+<linearGradient id="paint0_linear_818_3337" x1="2.625" y1="8.99977" x2="15.375" y2="8.99977" gradientUnits="userSpaceOnUse">
+<stop stopColor="#FBED96"/>
+<stop offset="1" stopColor="#ABECD6"/>
+</linearGradient>
+</defs>
+</svg>
+
+)
+
+export const CalendarDoneIcon = () => (
+    <svg width="33" height="32" viewBox="0 0 33 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11.1667 2.66602V6.66602V2.66602ZM21.8333 2.66602V6.66602V2.66602ZM5.16666 12.1193H27.8333H5.16666ZM29.8333 25.3327C29.8333 26.3327 29.5533 27.2793 29.06 28.0793C28.59 28.8693 27.9223 29.5233 27.1227 29.9769C26.3231 30.4304 25.4192 30.6679 24.5 30.666C23.1533 30.666 21.9267 30.1727 20.9933 29.3327C20.58 28.986 20.22 28.5593 19.94 28.0793C19.4325 27.2532 19.1647 26.3022 19.1667 25.3327C19.1667 22.386 21.5533 19.9993 24.5 19.9993C26.1 19.9993 27.5267 20.706 28.5 21.8127C29.3575 22.785 29.8315 24.0363 29.8333 25.3327Z" stroke="url(#paint0_linear_1063_5547)" strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M22.42 25.334L23.74 26.654L26.58 24.0273" stroke="url(#paint1_linear_1063_5547)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M28.5 11.3327V21.8127C27.5267 20.706 26.1 19.9993 24.5 19.9993C21.5533 19.9993 19.1667 22.386 19.1667 25.3327C19.1667 26.3327 19.4467 27.2793 19.94 28.0793C20.22 28.5593 20.58 28.986 20.9933 29.3327H11.1667C6.5 29.3327 4.5 26.666 4.5 22.666V11.3327C4.5 7.33268 6.5 4.66602 11.1667 4.66602H21.8333C26.5 4.66602 28.5 7.33268 28.5 11.3327Z" stroke="url(#paint2_linear_1063_5547)" strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M11.5587 22.2676H11.572M16.4933 18.2676H16.5067H16.4933ZM11.5587 18.2676H11.572H11.5587Z" stroke="url(#paint3_linear_1063_5547)" strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<defs>
+<linearGradient id="paint0_linear_1063_5547" x1="5.16666" y1="9.30306" x2="31.0528" y2="12.6135" gradientUnits="userSpaceOnUse">
+<stop stopColor="#84B9D1"/>
+<stop offset="1" stopColor="#D2B4FC"/>
+</linearGradient>
+<linearGradient id="paint1_linear_1063_5547" x1="22.42" y1="24.65" x2="26.6343" y2="25.6189" gradientUnits="userSpaceOnUse">
+<stop stopColor="#84B9D1"/>
+<stop offset="1" stopColor="#D2B4FC"/>
+</linearGradient>
+<linearGradient id="paint2_linear_1063_5547" x1="4.5" y1="10.5129" x2="29.5978" y2="14.0578" gradientUnits="userSpaceOnUse">
+<stop stopColor="#84B9D1"/>
+<stop offset="1" stopColor="#D2B4FC"/>
+</linearGradient>
+<linearGradient id="paint3_linear_1063_5547" x1="11.5587" y1="19.2157" x2="16.6714" y2="20.1338" gradientUnits="userSpaceOnUse">
+<stop stopColor="#84B9D1"/>
+<stop offset="1" stopColor="#D2B4FC"/>
+</linearGradient>
+</defs>
+</svg>
+
+)
