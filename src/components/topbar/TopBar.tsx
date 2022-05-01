@@ -195,7 +195,7 @@ const TopBar = () => {
 			{user.isLoggedIn && 
 			<div className='cursor-default flex items-center justify-end gap-2 text-[#616162] text-sm font-semibold w-[20%]'>
 				<div className='hidden sm:flex items-center overflow-clip bg-gradient w-6 h-6 rounded-xl' >
-					<img className="w-6 h-6 object-cover object-center" src={`https://avatar.tobi.sh/${user.walletAddress}`} alt="" />
+					<img className="w-6 h-6 object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${user.walletAddress}`} alt="" />
 				</div>
 				<div className="flex flex-col justify-center">
 					<p className='text-white text-[10px] sm:text-xs'>{shortAddress(user.walletAddress === "" ? walletAddress : user.walletAddress)}</p>

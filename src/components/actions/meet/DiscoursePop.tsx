@@ -57,10 +57,10 @@ const DiscoursePop = ({ data }: { data: any }) => {
                                         <div className='flex items-center w-12 h-6 relative'>
                                             <div className='flex items-center w-6 h-6 rounded-lg ring-[3px] ring-[#141515] overflow-clip'>
                                                 {/* TODO: add twitter fetch avatar */}
-                                                <img className="scale-105 w-6 h-6 object-cover object-center" src={`https://avatar.tobi.sh/${data.speakers[0].name}`} alt="" />
+                                                <img className="scale-105 w-6 h-6 rounded-lg object-cover object-center" src={`https://avatar.tobi.sh/${data.speakers[0].name}`} alt="" />
                                             </div>
                                             <div className='flex items-center absolute left-[35%] w-6 h-6 rounded-lg ring-[3px] ring-[#141515] overflow-clip'>
-                                                <img className="scale-105 w-6 h-6 object-cover object-center" src={`https://avatar.tobi.sh/${data.speakers[1].name}`} alt="" />
+                                                <img className="scale-105 w-6 h-6 rounded-lg object-cover object-center" src={`https://avatar.tobi.sh/${data.speakers[1].name}`} alt="" />
                                             </div>
                                         </div>
                                         <div className='flex flex-col'>

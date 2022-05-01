@@ -7,7 +7,7 @@ import Layout from '../components/layout/Layout'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useQuery } from '@apollo/client'
+import { useLazyQuery, useQuery } from '@apollo/client'
 import { GET_DISCOURSES } from '../lib/queries'
 import { RootState } from '../store'
 import LoadingSpinner from '../components/utils/LoadingSpinner'
@@ -32,9 +32,13 @@ const Home: NextPage = () => {
 		if (window && (window as any).ethereum) {
 			initWin(window as any);
 		}
+
+		refetch();
+
 	}, [])
 	
 	const { loading: dLoading, error: dError, data: dData } = useQuery(GET_DISCOURSES);
+	const [refetch] = useLazyQuery(GET_DISCOURSES);
 
 	return (
 		<div className="w-full h-screen ">

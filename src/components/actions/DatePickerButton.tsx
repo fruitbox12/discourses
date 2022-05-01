@@ -329,10 +329,9 @@ const DatePicker = ({ endTS, dates, setDates }: { endTS: number , dates: Array<a
         const today = new Date();
 
         if (monthCount === 0) {
-            if (day < today.getDate()) {
+            if (day < today.getDate() && day > (today.getDate() + 14)) {
                 return true;
             } else {
-                
                 return false;
             }
         } else {

@@ -20,10 +20,10 @@ const DiscourseLongList = ({ state, data }: { state: number, data: any }) => {
                     <div className='flex items-center w-16 h-8 relative'>
                         <div className='flex items-center w-8 h-8 rounded-xl ring-[3px] ring-[#141515] overflow-clip'>
                             {/* TODO: add twitter fetch avatar */}
-                            <img className="scale-105 w-8 h-8 object-cover object-center" src={`https://avatar.tobi.sh/${data.speakers[0].name}`} alt="" />
+                            <img className="scale-105 w-8 h-8 object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${data.speakers[0].name}`} alt="" />
                         </div>
                         <div className='flex items-center absolute left-[35%] w-8 h-8 rounded-xl ring-[3px] ring-[#141515] overflow-clip'>
-                            <img className="scale-105 w-8 h-8 object-cover object-center" src={`https://avatar.tobi.sh/${data.speakers[1].name}`} alt="" />
+                            <img className="scale-105 w-8 h-8 object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${data.speakers[1].name}`} alt="" />
                         </div>
                     </div>
                     <div className='sm:flex flex-col hidden'>

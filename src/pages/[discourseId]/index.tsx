@@ -281,10 +281,10 @@ const DiscoursePage = () => {
                                             <div className='flex items-center w-16 h-8 relative'>
                                                 <div className='flex items-center w-8 h-8 rounded-xl ring-[3px] ring-[#141515] overflow-clip'>
                                                     {/* TODO: add twitter fetch avatar */}
-                                                    <img className="scale-105 w-8 h-8 object-cover object-center" src={`https://avatar.tobi.sh/${data.getDiscourseById.speakers[0].name}`} alt="" />
+                                                    <img className="scale-105 w-8 h-8 object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${data.getDiscourseById.speakers[0].name}`} alt="" />
                                                 </div>
                                                 <div className='flex items-center absolute left-[35%] w-8 h-8 rounded-xl ring-[3px] ring-[#141515] overflow-clip'>
-                                                    <img className="scale-105 w-8 h-8 object-cover object-center" src={`https://avatar.tobi.sh/${data.getDiscourseById.speakers[1].name}`} alt="" />
+                                                    <img className="scale-105 w-8 h-8 object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${data.getDiscourseById.speakers[1].name}`} alt="" />
                                                 </div>
                                             </div>
                                             <div className='flex flex-col'>
@@ -339,7 +339,7 @@ const DiscoursePage = () => {
                                                         <div key={index} className="flex flex-col gap-2 py-2">
                                                             <div className='flex items-center gap-2 text-[#616162] text-sm font-semibold'>
                                                                 <div className='bg-gradient-g w-4 h-4 rounded-xl overflow-clip' >
-                                                                    <img className="w-full h-full object-cover object-center" src={`https://avatar.tobi.sh/${item.address}`} alt="" />
+                                                                    <img className="w-full h-full object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${item.address}`} alt="" />
                                                                 </div>
                                                                 <p className='text-white/60 text-xs'>{shortAddress(item.address)}</p>
                                                             </div>

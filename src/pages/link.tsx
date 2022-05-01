@@ -163,7 +163,7 @@ const InvitePage = () => {
                             </button>}
                             {user.isLoggedIn && <div className='cursor-default py-2 flex items-center w-max gap-2 text-[#616162] text-sm font-semibold'>
                                 <div className='flex items-center overflow-clip bg-gradient w-6 h-6 rounded-xl' >
-                                    <img className="w-6 h-6 object-cover object-center" src={`https://avatar.tobi.sh/${user.walletAddress}`} alt="" />
+                                    <img className="w-6 h-6 object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${user.walletAddress}`} alt="" />
                                 </div>
                                 <div className="flex flex-col justify-center">
                                     <p className='text-white text-xs'>{shortAddress(user.walletAddress === "" ? walletAddress : user.walletAddress)}</p>
@@ -185,7 +185,7 @@ const InvitePage = () => {
                             {handle !== "" && alreadyLinked && <p className="text-xs font-medium tracking-wide text-[#6a6a6a] mt-4">Accounts already linked!</p>}
                             {handle !== "" && accountLinked && <p className="text-xs font-medium tracking-wide text-[#6a6a6a] mt-4">Accounts linked!</p>}
 
-                            <img className="absolute right-2 bottom-0" src="/link_bg.svg" alt="" />
+                            <img className="absolute right-2 bottom-0 hidden sm:flex" src="/link_bg.svg" alt="" />
                         </div>
                     </div>
 

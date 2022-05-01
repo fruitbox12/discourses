@@ -33,7 +33,7 @@ const FundsDialog = ({ open, setOpen, funds }: { open: boolean, setOpen: Dispatc
                                         <div key={index} className="flex flex-col gap-2 py-2">
                                             <div className='flex items-center gap-2 text-[#616162] text-sm font-semibold'>
                                                 <div className='bg-gradient-g w-6 h-6 rounded-xl overflow-clip' >
-                                                    <img className="w-full h-full object-cover object-center" src={`https://avatar.tobi.sh/${item.address}`} alt="" />
+                                                    <img className="w-full h-full object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${item.address}`} alt="" />
                                                 </div>
                                                 <p className='text-white/60 text-xs'>{shortAddress(item.address)}</p>
                                             </div>

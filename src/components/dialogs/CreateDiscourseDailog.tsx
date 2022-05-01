@@ -14,6 +14,7 @@ import DiscourseHub from '../../web3/abi/DiscourseHub.json';
 import Addresses from '../../web3/addresses.json';
 import { CREATE_DISCOURSE } from '../../lib/mutations';
 import { getSecNow } from '../../helper/TimeHelper';
+import { GET_DISCOURSES } from '../../lib/queries';
 
 async function getDiscourseContract() {
     return await new (window as any).web3.eth.Contract(
@@ -39,11 +40,16 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
     const dispatch = useDispatch();
     const user = useSelector((state: RootState) => state.user);
 
+    const [ refetch ] = useLazyQuery(GET_DISCOURSES);
+
     const [createDiscourse, { data: cData }] = useMutation(CREATE_DISCOURSE, {
         context: {
             headers: {
                 authorization: `Bearer ${user.token}`
             }
+        },
+        onCompleted: (data) => {
+            refetch();
         }
     })
 

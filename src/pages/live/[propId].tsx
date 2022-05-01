@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { is24hrOld } from "../../helper/TimeHelper";
 import TokenErrorCard from "../../components/actions/meet/TokenErrorCard";
-import { GET_DISCOURSE_BY_ID } from "../../lib/queries";
+import { GET_DISCOURSES, GET_DISCOURSE_BY_ID } from "../../lib/queries";
 import { isSpeakerWallet } from "../../helper/DataHelper";
 import { Microphone2, MicrophoneSlash, Video, VideoSlash } from "iconsax-react";
 import { shortAddress } from "../../helper/StringHelper";
@@ -49,6 +49,7 @@ const LivePage = () => {
     const user = useSelector((state: RootState) => state.user);
     // const [token, setToken] = useState('');
     const [tokenError, setTokenError] = useState(false);
+    const [ getDiscourses ] = useLazyQuery(GET_DISCOURSES);
     const [getDiscourse, { data: dData, loading: dLoading, error: dError }] = useLazyQuery(GET_DISCOURSE_BY_ID, {
         variables: {
             id: propId
@@ -156,6 +157,8 @@ const LivePage = () => {
             if (meetingJoined) {
                 dispatch(clearMeet());
                 setMeetEnded(true);
+                getDiscourse();
+                getDiscourses();
             }
         }
     }, [roomState])
@@ -188,7 +191,7 @@ const LivePage = () => {
                         <div className="bg-card p-4 w-full max-w-sm rounded-xl flex flex-col items-center gap-2">
                             <CalendarDoneIcon />
                             <p className="text-white font-Lexend text-sm">Thanks for joining!</p>
-                            <Link href={`/${propId}`}>
+                            <Link href={`/`}>
                                 <a href="" className="text-gradient font-Lexend text-sm">&larr; back</a>
                             </Link>
                         </div>

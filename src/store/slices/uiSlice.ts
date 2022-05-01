@@ -2,10 +2,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type UiData = {
     showBetaMsg: boolean;
+    wrongChain: boolean;
 }
 
 const initialState: UiData = {
-    showBetaMsg: true
+    showBetaMsg: true,
+    wrongChain: false
 }
 
 export const uiSlice = createSlice({
@@ -14,9 +16,12 @@ export const uiSlice = createSlice({
     reducers: {
         setShowBetaMsg: (state, action: PayloadAction<boolean>) => {
             state.showBetaMsg = action.payload;
+        },
+        setWrongChain: (state, action: PayloadAction<boolean>) => {
+            state.wrongChain = action.payload;
         }
     }
 })
 
-export const { setShowBetaMsg } = uiSlice.actions;
+export const { setShowBetaMsg, setWrongChain } = uiSlice.actions;
 export default uiSlice.reducer;
