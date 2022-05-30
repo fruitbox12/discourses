@@ -14,7 +14,7 @@ import DiscourseHub from '../../web3/abi/DiscourseHub.json';
 import { CREATE_DISCOURSE } from '../../lib/mutations';
 import { getSecNow } from '../../helper/TimeHelper';
 import { GET_DISCOURSES } from '../../lib/queries';
-import { useContractRead, useContractWrite, useWaitForTransaction } from 'wagmi';
+import { chain, useContractRead, useContractWrite, useWaitForTransaction } from 'wagmi';
 import { contractData } from '../../helper/ContractHelper';
 import { TransactionReceipt } from '@ethersproject/abstract-provider';
 
@@ -170,10 +170,10 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
                             Fund Discourse
                         </Dialog.Title>
                         <Dialog.Description className="flex flex-col  w-full items-center  gap-4 text-center justify-between mt-4">
-                            <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>This is initial funding of the discourse required from creator. Need to fund min Ξ 0.01 </p>
+                            <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>This is initial funding of the discourse required from creator. Need to fund min 0.01 MATIC</p>
                             <div className='flex flex-col items-center justify-center w-full gap-4'>
                                 <label htmlFor="amount" className='relative flex items-center'>
-                                    <p className='absolute text-white m-auto inset-y-0 left-3 h-max'>Ξ</p>
+                                    <p className='absolute text-white m-auto inset-y-0 left-3 h-max'></p>
                                     <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" id='amount' className=" input-s pl-8 text-white" placeholder='Stake Amount' />
                                 </label>
                                 <button ref={buttonRef} onClick={handleFundClick} className='button-s font-semibold tracking-wide px-6 py-3  text-xs bg-[#212427] rounded-lg outline-none'>Fund &rarr;</button>
@@ -189,7 +189,7 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
                                 Creating Discourse
                             </Dialog.Title>
                             <Dialog.Description className="flex flex-col  w-full items-center  gap-4 text-center justify-between mt-4">
-                                <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>Approve the transaction from metamask.<br /> Ξ {amount} will be funded to the discourse.</p>
+                                <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>Approve the transaction from metamask.<br /> {amount} MATIC will be funded to the discourse.</p>
                                 <div className='flex items-center justify-center gap-2'>
                                     <UseAnimations animation={loading} size={20} strokeColor="#ffffff" className='text-white' />
                                     <p className='text-sm text-white/50' >Please Wait...</p>
@@ -208,7 +208,7 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
                             <Dialog.Description className="flex flex-col  w-full items-center  gap-4 text-center justify-between mt-4">
                                 <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>Discourse created! Click Discourse button below to go to the discourse page.</p>
                                 <div className='flex items-center justify-center w-full gap-10'>
-                                    <a href={`https://rinkeby.etherscan.io/tx/${txn}`} target="_blank" className='text-xs text-green-300  ' rel="noreferrer" >Transaction ↗</a>
+                                    <a href={`${chain.polygonMumbai.blockExplorers?.default.url}/tx/${txn}`} target="_blank" className='text-xs text-green-300  ' rel="noreferrer" >Transaction ↗</a>
                                     {discourseId !== "" && <button onClick={() => route.push(`/${discourseId}`)} className='text-xs font-bold  text-gradient' >Discourse &rarr;</button>}
                                 </div>
                             </Dialog.Description>

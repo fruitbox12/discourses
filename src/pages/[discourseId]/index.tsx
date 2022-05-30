@@ -320,7 +320,7 @@ const DiscoursePage = () => {
                                         }
 
                                         {user.isLoggedIn && !fundingDone(data.getDiscourseById) && <button onClick={handleFund} className='button-s w-max px-6 text-sm font-medium mt-4'>
-                                            Fund Ξ
+                                            Fund 
                                         </button>}
                                         {
                                             !user.isLoggedIn && !fundingDone(data.getDiscourseById) &&

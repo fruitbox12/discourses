@@ -10,7 +10,7 @@ import loading from 'react-useanimations/lib/loading';
 import { DiscourseIcon, FundDiscourseIcon } from '../utils/SvgHub';
 import { FUND_UPDATE } from '../../lib/mutations';
 import { GET_DISCOURSE_BY_ID } from '../../lib/queries';
-import { useContractWrite, useWaitForTransaction } from 'wagmi';
+import { chain, useContractWrite, useWaitForTransaction } from 'wagmi';
 import { contractData } from '../../helper/ContractHelper';
 import { TransactionReceipt } from '@ethersproject/abstract-provider';
 
@@ -112,10 +112,10 @@ const FundDiscourseDialog = ({ open, setOpen, discourse }: { open: boolean, setO
                                 Fund Discourse
                             </Dialog.Title>
                             <Dialog.Description className="flex flex-col  w-full items-center  gap-4 text-center justify-between mt-4">
-                                <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>You are about to fund a discoures. Need to fund min Ξ 0.01 </p>
+                                <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>You are about to fund a discoures. Select the amount in MATIC. </p>
                                 <div className='flex flex-col items-center justify-center w-full gap-4'>
                                     <label htmlFor="amount" className='relative flex items-center'>
-                                        <p className='absolute text-white m-auto inset-y-0 left-3 h-max'>Ξ</p>
+                                        <p className='absolute text-white m-auto inset-y-0 left-3 h-max'></p>
                                         <input value={amount} onChange={(e) => setAmount(e.target.value) } type="number" id='amount' className=" input-s pl-8 text-white" placeholder='Stake Amount' />
                                     </label>
                                     <button onClick={handleFundClick} ref={buttonRef} className='button-s font-semibold tracking-wide px-6 py-3  text-xs bg-[#212427] rounded-lg outline-none'>Fund &rarr;</button>
@@ -131,7 +131,7 @@ const FundDiscourseDialog = ({ open, setOpen, discourse }: { open: boolean, setO
                                     Funding Discourse
                                 </Dialog.Title>
                                 <Dialog.Description className="flex flex-col  w-full items-center  gap-4 text-center justify-between mt-4">
-                                    <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>Approve the transaction from metamask.<br /> Ξ {amount} will be funded to the discourse.</p>
+                                    <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>Approve the transaction from metamask.<br /> {amount} MATIC will be funded to the discourse.</p>
                                     <div className='flex items-center justify-center gap-2'>
                                         <UseAnimations animation={loading} size={20} strokeColor="#ffffff" className='text-white' />
                                         <p className='text-sm text-white/50' >Please Wait...</p>
@@ -150,7 +150,7 @@ const FundDiscourseDialog = ({ open, setOpen, discourse }: { open: boolean, setO
                             <Dialog.Description className="flex flex-col  w-full items-center  gap-4 text-center justify-between mt-4">
                                 <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>Thanks for funding the discourse. You&apos;ll get notification once the stream is scheduled and speakers confirms.</p>
                                 <div className='flex items-center justify-center w-full px-10 gap-10'>
-                                    <a href={`https://rinkeby.etherscan.io/tx/${txn}`} target="_blank" className='text-xs font-bold  text-gradient' rel="noreferrer" >View Transaction ↗</a>
+                                    <a href={`${chain.polygonMumbai.blockExplorers?.default.url}/tx/${txn}`} target="_blank" className='text-xs font-bold  text-gradient' rel="noreferrer" >View Transaction ↗</a>
                                 </div>
                             </Dialog.Description>
                             </>
