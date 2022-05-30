@@ -13,19 +13,21 @@ import { useRouter } from "next/router";
 import { Twitter_x10 } from "../utils/SvgHub";
 import useLoginCheck from "../../hooks/useLoginCheck";
 import Link from "next/link";
+import WalletOptionsPopUp from "../dialogs/WalletOptions";
+import useCheck from "../../hooks/useCheck";
 
 const TopBar = () => {
 
 	const dispatch = useDispatch();
 	const route = useRouter();
-
 	const user = useSelector((state: RootState) => state.user);
-	const [walletAddress, setWalletAddress] = useState('');
-	const [connectingWallet, setConnectingWallet] = useState(false);
+	const [clientLoaded, setClientLoaded] = useState(false);
 
-	const { initWin } = useLoginCheck(window as any);
+	useEffect(() => {
+		setClientLoaded(true);
+	}, [])
 
-	const [getNonce, { data: nonceData, loading: nonceLoading, error: nonceError }] = useLazyQuery(GET_NONCE);
+	const d = useCheck();
 	const [getAccountData, { data: accountData, loading: accountLoading, error: accountError }] = useLazyQuery(GET_USERDATA, {
 		fetchPolicy: 'network-only',
 		context: {
@@ -34,9 +36,7 @@ const TopBar = () => {
 			}
 		},
 		onCompleted: (data) => {
-			
 			if (data && data.getUserData) {
-				
 				dispatch(
 					updateTwitter({
 						tConnected: data.getUserData.twitterConnected ? true : false,
@@ -49,141 +49,17 @@ const TopBar = () => {
 			}
 		}
 	});
-	const [verifySig, { data, loading: sigLoading, error: sigError }] = useMutation(VERIFY_SIG, {
-		fetchPolicy: 'network-only',
-		onCompleted: (data) => {
-
-			if (data) {
-				setConnectingWallet(false);
-				dispatch(setUser({
-					token: data.verifySignature.token,
-					username: data.verifySignature.username,
-					walletAddress: data.verifySignature.address,
-					expiresAt: new Date(new Date().getTime() + 1).toISOString(),
-					isLoggedIn: true,
-					tConnected: false,
-					t_handle: "",
-					t_name: "",
-					t_id: "",
-					t_img: ""
-				}));
-			}
-		},
-		onError: (error) => {
-			console.log(error);
-		}
-	});
-
-	useEffect(() => {
-		if (window && (window as any).ethereum) {
-			initWin(window as any);
-		}
-	},[])
-
-	useEffect(() => {
-		if (nonceData && !user.isLoggedIn) {
-			console.log("nonceData", nonceData);
-			signAndVerify(nonceData.getNonce.nonce);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [nonceData])
 
 	useEffect(() => {
 		if (user.isLoggedIn) {
 			getAccountData();
-		}
+		} 
 	}, [getAccountData, user]);
 
-	useEffect(() => {
-		if (data) {
-			console.log(data);
+	// Account reset on expire token
 
-			setConnectingWallet(false);
-			dispatch(setUser({
-				token: data.verifySignature.token,
-				username: data.verifySignature.username,
-				walletAddress: data.verifySignature.address,
-				expiresAt: new Date(new Date().getTime() + 1).toISOString(),
-				isLoggedIn: true,
-				tConnected: false,
-				t_handle: "",
-				t_name: "",
-				t_id: "",
-				t_img: ""
-			}));
-		}
-	}, [data])
-
-
-	const signAndVerify = async (nonce: string) => {
-		const sigData = await signNonce(nonce)
-			.catch(err => {
-				console.log(err);
-				return;
-			});
-
-
-		if (sigData?.signature && !user.isLoggedIn) {
-
-			verifySig({
-				variables: {
-					signature: sigData.signature,
-					walletAddress: sigData.address
-				}
-			});
-		}
-	}
-
-	const signNonce = async (nonce: string) => {
-		try {
-			const win = window as any;
-			if (win.ethereum === 'undefined') {
-				return;
-			}
-
-			await win.ethereum.request({ method: "eth_requestAccounts" });
-			const provider = new ethers.providers.Web3Provider(win.ethereum);
-			const signer = provider.getSigner();
-			const signature = await signer.signMessage(nonce)
-				.catch(err => {
-					alert("Error occured!");
-					return;
-				})
-			const address = await signer.getAddress();
-			return {
-				signature,
-				address
-			}
-		} catch (error) {
-			console.log(error);
-			setConnectingWallet(false);
-		}
-	}
-
-
-	const handleConnectWallet = async () => {
-		setConnectingWallet(true);
-
-		try {
-			const win = window as any;
-			if (win.ethereum === 'undefined') {
-				alert("Please install MetaMask to use this application.")
-				return;
-			}
-
-			await win.ethereum.request({ method: 'eth_requestAccounts' });
-			const provider = new ethers.providers.Web3Provider(win.ethereum);
-			const signer = provider.getSigner();
-			const address = await signer.getAddress();
-			setWalletAddress(address);
-			if (!user.isLoggedIn) {
-				getNonce({ variables: { address: address } });
-			}
-
-		} catch (error) {
-			console.log(error);
-			setConnectingWallet(false);
-		}
+	if (!clientLoaded) {
+		return <></>
 	}
 
 	return (
@@ -198,7 +74,7 @@ const TopBar = () => {
 					<img className="w-6 h-6 object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${user.walletAddress}`} alt="" />
 				</div>
 				<div className="flex flex-col justify-center">
-					<p className='text-white text-[10px] sm:text-xs'>{shortAddress(user.walletAddress === "" ? walletAddress : user.walletAddress)}</p>
+					<p className='text-white text-[10px] sm:text-xs'>{shortAddress(user.walletAddress === "" ? '' : user.walletAddress)}</p>
 					{
 						!user.tConnected && 
 						<Link href="/link" >
@@ -211,13 +87,13 @@ const TopBar = () => {
 				</div>
 			</div>}
 
-			{!user.isLoggedIn && <div className='cursor-default hidden sm:flex items-center justify-end gap-2 text-[#616162] text-sm font-semibold w-[20%]'>
-				<Wallet1 size={20} />
-				<button onClick={handleConnectWallet} className='text-white font-bold sm:text-xs hover:text-gradient'>Connect Wallet</button>
+			{!user.isLoggedIn && <div className='cursor-default flex items-center justify-end gap-2 text-[#616162] text-sm font-semibold w-[20%]'>
+				{/* <button onClick={handleConnectWallet} className='text-white font-bold sm:text-xs hover:text-gradient'>Connect Wallet</button> */}
+				<WalletOptionsPopUp />
 			</div>}
-			{!user.isLoggedIn && <div className='cursor-default flex sm:hidden items-center justify-end gap-2 text-[#616162] text-sm font-semibold w-[20%]'>
+			{/* {!user.isLoggedIn && <div className='cursor-default flex sm:hidden items-center justify-end gap-2 text-[#616162] text-sm font-semibold w-[20%]'>
 				<button onClick={handleConnectWallet} className='button-i'><Wallet1 size={20} /></button>
-			</div>}
+			</div>} */}
 		</nav>
 	);
 }

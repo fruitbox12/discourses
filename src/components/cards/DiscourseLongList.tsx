@@ -36,7 +36,7 @@ const DiscourseLongList = ({ state, data }: { state: number, data: any }) => {
                 {/* title */}
                 <div className='flex flex-col flex-[0.7]'>
                     <h3 className='text-white text-sm font-semibold'>{data.title}</h3>
-                    <p className='text-[#68D391] font-bold text-xs'>Ξ {getFundTotal(data.funds)}</p>
+                    <p className='text-[#68D391] font-bold text-xs'>{getFundTotal(data.funds)} MATIC</p>
                 </div>
             </div>
 

@@ -107,8 +107,6 @@ const SlotCard = ({endTS, data, propId, id } : {endTS: number, data:any, propId:
 
             let slot: any = pSlot[i];
             for (let j = 0; j < slot.slots.length; j++) {
-                console.log((sSlots as any)[i].date);
-                
                 const date: Date = new Date((sSlots as any)[i].date);
                 date.setHours((sSlots as any)[i].slots[j]);
                 slots.push({

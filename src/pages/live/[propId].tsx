@@ -192,7 +192,7 @@ const LivePage = () => {
                             <CalendarDoneIcon />
                             <p className="text-white font-Lexend text-sm">Thanks for joining!</p>
                             <Link href={`/`}>
-                                <a href="" className="text-gradient font-Lexend text-sm">&larr; back</a>
+                                <a className="text-gradient font-Lexend text-sm">&larr; back</a>
                             </Link>
                         </div>
                     </div>

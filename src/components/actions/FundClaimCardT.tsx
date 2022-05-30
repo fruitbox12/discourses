@@ -4,27 +4,19 @@ import { hasWithdrawn, isPledger } from "../../helper/DataHelper";
 import { RootState } from "../../store";
 import { TERMINATE_PROPOSAL, FUND_WITHDRAWN } from "../../lib/mutations";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import DiscourseHub from '../../web3/abi/DiscourseHub.json';
-import Addresses from '../../web3/addresses.json';
-import Web3 from "web3";
 import { useEffect, useState } from "react";
 import { GET_DISCOURSE_BY_ID } from "../../lib/queries";
-
-const getDiscourseContract = async () => {
-    return await new (window as any).web3.eth.Contract(
-        DiscourseHub,
-        Addresses.discourse_daimond
-    )
-}
+import { useContractWrite, useWaitForTransaction } from "wagmi";
+import { contractData } from "../../helper/ContractHelper";
 
 const FundClaimCardT = ({ data }: { data: any }) => {
 
-    const [ loading, setLoading ] = useState(false);
-    const [ needTermination, setNeedTermination ] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [needTermination, setNeedTermination] = useState(false);
 
     const user = useSelector((state: RootState) => state.user);
 
-    const [ terminateProposal ] = useMutation(TERMINATE_PROPOSAL, {
+    const [terminateProposal] = useMutation(TERMINATE_PROPOSAL, {
         variables: {
             propId: data.propId
         },
@@ -42,7 +34,7 @@ const FundClaimCardT = ({ data }: { data: any }) => {
         }
     });
 
-    const [ fundWithdrawn ] = useMutation(FUND_WITHDRAWN, {
+    const [fundWithdrawn] = useMutation(FUND_WITHDRAWN, {
         variables: {
             propId: data.propId
         },
@@ -56,7 +48,7 @@ const FundClaimCardT = ({ data }: { data: any }) => {
         }
     })
 
-    const [ refetch ] = useLazyQuery(GET_DISCOURSE_BY_ID, {
+    const [refetch] = useLazyQuery(GET_DISCOURSE_BY_ID, {
         variables: {
             id: data.id
         }, onCompleted: (data) => {
@@ -64,23 +56,34 @@ const FundClaimCardT = ({ data }: { data: any }) => {
         }
     })
 
-    
-    useEffect(() => {
-        if(data.status.terminated && needTermination) {
-            callClaim();
+    const withdrawP = useContractWrite(
+        contractData(),
+        'withdrawPledge',
+        {
+            args: [data.propId],
+            overrides: { from: user.walletAddress },
+            onSettled: (txn) => {
+                console.log('submitted:', txn);
+            },
+            onError: (error) => {
+                setLoading(false);
+                console.log(error);
+            }
         }
-    }, [data, needTermination])
+    )
 
-    const loadWeb3 = async () => {
-        const win = window as any;
-        if (win.ethereum) {
-            win.web3 = new Web3(win.ethereum);
-            await win.ethereum.enable();
-            (window as any).contract = await getDiscourseContract();
-        } else {
-            // Show metamask error
+    const waitForWithdrawl = useWaitForTransaction({
+        hash: withdrawP.data?.hash,
+        onSettled: (txn) => {
+            fundWithdrawn();
         }
-    }
+    })
+
+    useEffect(() => {
+        if (data.status.terminated && needTermination) {
+            withdrawP.write();
+        }
+    }, [data, needTermination, withdrawP])
 
     const handleClaim = async () => {
         setLoading(true);
@@ -90,34 +93,8 @@ const FundClaimCardT = ({ data }: { data: any }) => {
             terminateProposal();
         } else {
             console.log("terminated");
-            callClaim();
+            withdrawP.write();
         }
-    }
-
-    const callClaim = async () => {
-        await loadWeb3();
-
-        // if (data.prop_starter === user.walletAddress) {
-        //     try {
-        //         const tx = await (window as any).contract.methods.proposerWithdraw(data.propId).send({ from: user.walletAddress });
-        //         console.log(tx);
-        //         fundWithdrawn();
-                
-        //     } catch (error) {
-        //         console.log(error);
-        //         setLoading(false);
-        //     }
-        // } else {
-            try {
-                const tx = await (window as any).contract.methods.withdrawPledge(data.propId).send({ from: user.walletAddress });
-                console.log(tx);
-                fundWithdrawn();
-                
-            } catch (error) {
-                console.log(error);
-                setLoading(false);
-            }
-        // }
     }
 
     return (
@@ -130,18 +107,18 @@ const FundClaimCardT = ({ data }: { data: any }) => {
                 Speakers didn&apos;t confirmed
             </p>
             {
-                !user.isLoggedIn && 
+                !user.isLoggedIn &&
                 <p className="text-yellow-200/70 text-[10px] font-medium bg-yellow-200/10 px-2 rounded-md mt-2 py-1">Connect your wallet to withdraw your fund.</p>
             }
             {
                 user.isLoggedIn && isPledger(data, user.walletAddress) && !hasWithdrawn(data, user.walletAddress) &&
                 <>
-                { !loading && <button onClick={handleClaim} className="button-s text-[#c6c6c6] font-Lexend text-sm mt-2">
-                    Claim Funds
-                </button>}
-                { loading && <button disabled className="button-s-d text-[#797979] font-Lexend text-sm mt-2">
-                    wait..
-                </button>}
+                    {!loading && <button onClick={handleClaim} className="button-s text-[#c6c6c6] font-Lexend text-sm mt-2">
+                        Claim Funds
+                    </button>}
+                    {loading && <button disabled className="button-s-d text-[#797979] font-Lexend text-sm mt-2">
+                        wait..
+                    </button>}
                 </>
             }
 

@@ -230,3 +230,9 @@ export const ENTER_DISCOURSE = gql`
         enterDiscourse(propId: $propId)
     }
 `
+
+export const RAISE_DISPUTE = gql`
+    mutation Disputed($txnHash: String!, $propId: Int) {
+        disputed(txnHash: $txnHash, propId: $propId)
+    }
+`

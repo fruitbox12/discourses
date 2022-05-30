@@ -1,5 +1,5 @@
 import { Clock, Verify } from "iconsax-react";
-import { formatDate, getTimeFromDate, isFuture, isPast } from "../../../helper/TimeHelper";
+import { formatDate, getTimeFromDate, isDisputable, isFuture, isPast } from "../../../helper/TimeHelper";
 import { ArrowGRightIcon, ArrowRightIcon, HappeningIconGreen } from "../../utils/SvgHub";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store";
@@ -12,7 +12,9 @@ import DiscourseHub from '../../../web3/abi/DiscourseHub.json';
 import Addresses from '../../../web3/addresses.json';
 import Web3 from "web3";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { ENTER_DISCOURSE } from "../../../lib/mutations";
+import { ENTER_DISCOURSE, RAISE_DISPUTE } from "../../../lib/mutations";
+import { useContractWrite, useWaitForTransaction } from "wagmi";
+import { contractData } from "../../../helper/ContractHelper";
 
 const getDiscourseContract = async () => {
     return await new (window as any).web3.eth.Contract(
@@ -60,13 +62,13 @@ const JoinMeetCard = ({ data }: { data: any }) => {
         }
     })
 
-    const [ refetch ] = useLazyQuery(GET_DISCOURSE_BY_ID, {
+    const [refetch] = useLazyQuery(GET_DISCOURSE_BY_ID, {
         variables: {
             id: data.id
         }
     })
 
-    const [ enterMeet ] = useMutation(ENTER_DISCOURSE, {
+    const [enterMeet] = useMutation(ENTER_DISCOURSE, {
         variables: {
             propId: data.propId
         },
@@ -81,6 +83,21 @@ const JoinMeetCard = ({ data }: { data: any }) => {
         }
     })
 
+    const [raiseD] = useMutation(RAISE_DISPUTE, {
+        variables: {
+            propId: data.propId
+        },
+        context: {
+            headers: {
+                authorization: `Bearer ${user.token}`
+            }
+        },
+        onCompleted: () => {
+            refetch();
+        }
+    })
+
+
 
     const speakerEntered = () => {
         if (data.discourse.confirmation[0] === user.walletAddress || data.discourse.confirmation[1] === user.walletAddress) {
@@ -88,7 +105,7 @@ const JoinMeetCard = ({ data }: { data: any }) => {
         }
         return false;
     }
-    
+
     const userIsSpeaker = () => {
         if (data.speakers[0].address === user.walletAddress || data.speakers[1].address === user.walletAddress) {
             return true;
@@ -100,7 +117,7 @@ const JoinMeetCard = ({ data }: { data: any }) => {
         setLoading(true);
         if (!userIsSpeaker()) {
             if (meet.token !== "" && !isPast(meet.timeStamp) && meet.propId === data.propID) {
-                route.push("/live/"+data.id)
+                route.push("/live/" + data.id)
                 setLoading(false);
             } else {
                 getMeetToken();
@@ -117,7 +134,7 @@ const JoinMeetCard = ({ data }: { data: any }) => {
     const joinMeet = () => {
         if (!tLoading) {
             if (meet.token !== "" && !isPast(meet.timeStamp) && meet.propId === data.propID) {
-                route.push("/live/"+data.id)
+                route.push("/live/" + data.id)
                 setLoading(false);
             } else {
                 getMeetToken();
@@ -125,23 +142,65 @@ const JoinMeetCard = ({ data }: { data: any }) => {
         }
     }
 
-    const enterDiscourse = async () => {
-        await loadWeb3();
-        try {
-            const tx = await (window as any).contract.methods.enterDiscourse(data.propId).send({ from : user.walletAddress });
-            console.log(tx);
-
-            enterMeet();
+    const enterD = useContractWrite(
+        contractData(),
+        'enterDiscourse',
+        {
+            args: [data.propId],
+            overrides: { from: user.walletAddress },
+            onSettled: (txn) => {
+                console.log('submitted:', txn);
+            },
+            onError: (error) => {
+                console.log('error:', error);
+                setLoading(false);
+            }
             
-        } catch (error) {
-            setLoading(false);
-            console.log(error);
         }
-    }
+    )
+
+    const waitForTxnEnter = useWaitForTransaction({
+        hash: enterD.data?.hash,
+        onSettled: (txn) => {
+            console.log('settled:', txn);
+            enterMeet();
+        }
+    })
+
     
+    const raiseDis = useContractWrite(
+        contractData(),
+        'raiseDispute',
+        {
+            args: [data.propId],
+            overrides: { from: user.walletAddress },
+            onSettled: (txn) => {
+                console.log('submitted:', txn);
+            },
+            onError: (error) => {
+                console.log('error:', error);
+            }
+        }
+    )
+
+    const waitForTxnRaise = useWaitForTransaction({
+        hash: raiseDis.data?.hash,
+        onSettled: (txn) => {
+            console.log('settled:', txn);
+            raiseD();
+        }
+    })
+    
+    const enterDiscourse = async () => {
+        enterD.write();
+    }
+    const raiseDispute = async () => {
+        raiseDis.write();
+    }
+
 
     useEffect(() => {
-        if(tokenData) {
+        if (tokenData) {
             dispatch(setMeet({
                 propId: data.propId,
                 dId: data.id,
@@ -149,7 +208,7 @@ const JoinMeetCard = ({ data }: { data: any }) => {
                 timeStamp: tokenData.getMeetToken.eat
             }))
             setLoading(false);
-            route.push("/live/"+data.id)
+            route.push("/live/" + data.id)
         }
     }, [tokenData])
 
@@ -167,8 +226,8 @@ const JoinMeetCard = ({ data }: { data: any }) => {
                         Discourse started at <b>{formatDate(new Date(d.meet_date))}</b> • <b>{getTimeFromDate(new Date(d.meet_date))}</b>
                     </p>
                     {user.isLoggedIn && <button onClick={handleJoinMeet} className="button-s flex items-center gap-2 w-max bg-gradient-g">
-                        <p className="text-gradient-g text-sm font-Lexend text-[#212427] font-medium">{loading ? 'wait..': "join"}</p>
-                        { !loading && <ArrowRightIcon />}
+                        <p className="text-gradient-g text-sm font-Lexend text-[#212427] font-medium">{loading ? 'wait..' : "join"}</p>
+                        {!loading && <ArrowRightIcon />}
                     </button>}
                     {
                         !user.isLoggedIn &&
@@ -199,6 +258,12 @@ const JoinMeetCard = ({ data }: { data: any }) => {
                     <p className="text-[#c6c6c6] text-[10px]">
                         Discourse completed on <b>{formatDate(new Date(d.meet_date))}</b>
                     </p>
+                    {
+                        isDisputable(new Date(d.c_timestamp)) &&
+                        <div className="flex items-center">
+                            <p className="text-[#797979] font-semibold text-[10px]"></p><button onClick={() => raiseDispute()} className="text-[#FC8181] font-semibold text-[10px] outline-none border-none hover:underline">Raise Dispute </button>
+                        </div>
+                    }
                 </div>
             }
         </>

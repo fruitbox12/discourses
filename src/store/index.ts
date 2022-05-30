@@ -3,7 +3,7 @@ import userReducer from "./slices/userSlice";
 import meetReducer from "./slices/meetSlice";
 import uiReducer from "./slices/uiSlice";
 import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
+import storage from "./storage";
 
 const persistUserConfig = {
     key: "user",

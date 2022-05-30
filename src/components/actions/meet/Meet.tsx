@@ -44,15 +44,11 @@ const Meet = ({ dData }: { dData: any }) => {
 
     // onEvent to end
     const onEndEvent = useCallback((msg) => {
-        console.log("onEndEvent", msg);
         
         if (msg.type === REJECT_END_EVENT) {
             setEndEventRequested(false);
             setEndEventRequest(false);
         } else if (msg.type === END_EVENT && msg.by !== getLocalPeer()?.id) {
-            console.log('rP', msg.by);
-            console.log('mP', getLocalPeer()?.id);
-            
             setEndEventRequest(true);
         }
     }, [])
@@ -64,8 +60,6 @@ const Meet = ({ dData }: { dData: any }) => {
 
 
     useEffect(() => {
-        console.log(isConnected ? 'connected' : 'not connected');
-
     }, [isConnected, audioEnabled, videoEnabled]);
 
     useEffect(() => {
@@ -73,21 +67,13 @@ const Meet = ({ dData }: { dData: any }) => {
             return;
         }
 
-        // notification is a reactive object
-        // this function will run everytime there is a new notification
-        console.log('notification type', notification.type);
-
         if (notification.type === HMSNotificationTypes.NEW_MESSAGE) {
-
-            console.log('new message', notification.data);
-            
             if (!showChat && notification.data.type === "chat") {
                 setShowPing(true);
             }
         }
 
         if (notification.type === HMSNotificationTypes.ROOM_ENDED) {
-            console.log('room ended', notification.data);
         }
     }, [notification])
 
@@ -203,7 +189,7 @@ const Meet = ({ dData }: { dData: any }) => {
 
                     <div className="grid grid-cols-2 grid-flow-row w-full gap-2">
                         {
-                            peers.filter(p => p.roleName === "speaker").map((peer) => (
+                            peers.filter(p => p.roleName === "speaker").slice(0,2).map((peer) => (
                                 <VideoTile key={peer.id} peer={peer} />
                             ))
                         }

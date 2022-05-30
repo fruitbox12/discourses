@@ -38,7 +38,7 @@ const FundsDialog = ({ open, setOpen, funds }: { open: boolean, setOpen: Dispatc
                                                 <p className='text-white/60 text-xs'>{shortAddress(item.address)}</p>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <p className="text-gradient text-sm font-bold">Ξ {getFund(item.amount)}</p>
+                                                <p className="text-gradient text-sm font-bold">{getFund(item.amount)} MATIC</p>
                                                 <p className="text-white/40 text-[10px] ">{getAgoT(item.timestamp)}</p>
                                             </div>
                                         </div>

@@ -56,7 +56,6 @@ const ParticipateCard = ({ data }: {data : any}) => {
                         email: email
                     },
                     onCompleted: (data) => {
-                        console.log(data);
                         setEdit(false);
                         refetch();
                     }

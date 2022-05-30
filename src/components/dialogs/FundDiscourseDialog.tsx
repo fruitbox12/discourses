@@ -1,26 +1,18 @@
-import { Dialog, Transition } from '@headlessui/react';
+import { Dialog } from '@headlessui/react';
 import { Dispatch, SetStateAction, useRef } from "react";
-import { useRouter } from 'next/router';
-import Web3 from "web3";
 import { ethers } from "ethers";
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { useLazyQuery, useMutation, gql, ApolloQueryResult } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import UseAnimations from 'react-useanimations';
 import loading from 'react-useanimations/lib/loading';
 import { DiscourseIcon, FundDiscourseIcon } from '../utils/SvgHub';
-import DiscourseHub from '../../web3/abi/DiscourseHub.json';
-import Addresses from '../../web3/addresses.json';
 import { FUND_UPDATE } from '../../lib/mutations';
 import { GET_DISCOURSE_BY_ID } from '../../lib/queries';
-
-async function getDiscourseContract() {
-    return await new (window as any).web3.eth.Contract(
-        DiscourseHub,
-        Addresses.discourse_daimond
-    )
-}
+import { useContractWrite, useWaitForTransaction } from 'wagmi';
+import { contractData } from '../../helper/ContractHelper';
+import { TransactionReceipt } from '@ethersproject/abstract-provider';
 
 
 const FundDiscourseDialog = ({ open, setOpen, discourse }: { open: boolean, setOpen: Dispatch<SetStateAction<boolean>>, discourse: any }) => {
@@ -29,13 +21,8 @@ const FundDiscourseDialog = ({ open, setOpen, discourse }: { open: boolean, setO
     const [minting, setMinting] = useState(false);
     const [txn, setTxn] = useState("");
     const [funded, setFunded] = useState(false);
-    const [ walletAddress, setWalletAddress ] = useState('');
     const [ amount, setAmount ] = useState('0.01');
 
-    
-    const route = useRouter();
-    
-    const dispatch = useDispatch();
     const user = useSelector((state: RootState) => state.user);
     
     const [ updateFund, { data: fData } ] = useMutation(FUND_UPDATE, {
@@ -46,65 +33,64 @@ const FundDiscourseDialog = ({ open, setOpen, discourse }: { open: boolean, setO
         }
     })
 
-    const [ fetchD ] = useLazyQuery(GET_DISCOURSE_BY_ID);
+    const [ fetchD ] = useLazyQuery(GET_DISCOURSE_BY_ID, { variables: { id: discourse.id } });
+
+    const fund = useContractWrite(
+        contractData(),
+        'pledgeFunds',
+        {
+            args: [+discourse.propId],
+            overrides: { from: user.walletAddress, value: ethers.utils.parseEther(amount) },
+            onSettled: (txn) => {
+                console.log('submitted:', txn);
+            },
+            onError: (error) => {
+                console.log('error:', error);
+                setMinting(false);
+            }
+        }
+    )
+
+    const waitForTxn = useWaitForTransaction({
+        hash: fund.data?.hash,
+        onSettled: (txn) => {
+            console.log('settled:', txn);
+            if (txn) {
+                setTxn(txn?.transactionHash);
+                writeFund(txn);
+            }
+        }
+    })
+
+    const writeFund = (txnData: TransactionReceipt) => {
+        updateFund({
+            variables: {
+                propId: discourse.propId,
+                amount: ethers.utils.parseEther(amount)+"",
+                txn: txnData.transactionHash
+            },
+            onCompleted: (data) => {
+                setMinting(false);
+                setFunded(true);
+                fetchD();
+            },
+            onError: (error) => {
+                console.log(error);
+                setMinting(false);
+                // error handle
+            }
+        })
+    }
 
     const handleClose = () => {
         setOpen(false);
     }
 
     
-    // useEffect(() => {
-    //     if (joinDaoData) {
-    //         setMinting(false);
-    //         setPostMinted(true);
-    //     }
-    // }, [joinDaoData]);
-
-    const loadWeb3 = async () => {
-        const win = window as any;
-        if (win.ethereum) {
-            win.web3 = new Web3(win.ethereum);
-            await win.ethereum.enable();
-        } else {
-            // Show metamask error
-        }
-    }
-
-    const load = async () => {
-        await loadWeb3();
-        (window as any).contract = await getDiscourseContract();
-    }
 
     const handleFundClick = async () => {
         setMinting(true);
-        await load();
-        try {
-            
-            const tx = await (window as any).contract.methods.pledgeFunds(+discourse.propId).send({ from: user.walletAddress, value: ethers.utils.parseEther(amount) });
-            console.log(tx);
-            updateFund({
-                variables: {
-                    propId: discourse.propId,
-                    amount: ethers.utils.parseEther(amount)+"",
-                    txn: tx.transactionHash
-                },
-                onCompleted: (data) => {
-                    setMinting(false);
-                    setFunded(true);
-                    fetchD({ variables: { id: discourse.id } });
-                },
-                onError: (error) => {
-                    console.log(error);
-                    setMinting(false);
-                    // error handle
-                }
-            })
-            setTxn(tx.transactionHash);
-            
-        } catch (error) {
-            setMinting(false);
-            console.log(error);
-        }
+        fund.write();
     }
 
 

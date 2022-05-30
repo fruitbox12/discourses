@@ -22,6 +22,36 @@ const timeDuration = [
     { id: 8, sec: 1800, value: "1/2 Hour", title: "1/2 Hour ~ (1800s)", unavailable: false },
 ]
 
+let mockD = {
+    speakers: [
+        {
+            name: "",
+            username: "",
+            confirmed: false,
+            isTwitterHandle: true,
+            address: "0x00",
+        },
+        {
+            name: "",
+            username: "",
+            confirmed: false,
+            isTwitterHandle: true,
+            address: "0x00"
+        }
+    ],
+    propId: 0,
+    description: "",
+    title: "",
+    prop_description: "",
+    prop_starter: "0x00",
+    charityPercent: 0,
+    initTS: "",
+    endTS: "",
+    topics: [],
+    initialFunding: "0.01",
+    fundingPeriod: 0
+}
+
 const CreateDiscoursePage = () => {
 
     const route = useRouter();
@@ -30,7 +60,7 @@ const CreateDiscoursePage = () => {
     const [topicCount, setTopicCount] = useState(3)
     const [openFundDialog, setOpenFundDialog] = useState(false);
     const [formError, setFormError] = useState("");
-    const [newDiscourse, setNewDiscourse] = useState({});
+    const [newDiscourse, setNewDiscourse] = useState(mockD);
 
     const handleSubmit = () => {
         if (speakerOne.length > 0 && speakerTwo.length > 0 && title.length > 0 && description.length > 0 && checkTopics(topics)) {

@@ -318,8 +318,6 @@ const DatePicker = ({ endTS, dates, setDates }: { endTS: number , dates: Array<a
         const lastDay = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
 
         const daysInCurrentMonth = lastDay - today.getDate();
-
-        console.log();
         
 
         return getEndDate(endTS).getDate() - daysInCurrentMonth;
@@ -329,7 +327,7 @@ const DatePicker = ({ endTS, dates, setDates }: { endTS: number , dates: Array<a
         const today = new Date();
 
         if (monthCount === 0) {
-            if (day < today.getDate() && day > (today.getDate() + 14)) {
+            if (day < today.getDate() || day > (today.getDate() + 14)) {
                 return true;
             } else {
                 return false;

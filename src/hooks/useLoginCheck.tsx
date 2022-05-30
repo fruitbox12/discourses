@@ -7,7 +7,7 @@ import { REFRESH_TOKEN, VERIFY_SIG } from '../lib/mutations'
 import { setUser, updateToken } from '../store/slices/userSlice'
 import { ethers } from "ethers";
 
-const useLoginCheck = (windows: any) => {
+const useLoginCheck = (windows?: any) => {
 
     const dispatch = useDispatch();
 

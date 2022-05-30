@@ -90,6 +90,7 @@ export const GET_DISCOURSE_BY_ID = gql`
                 ended
                 meet_date
                 confirmation
+                c_timestamp
             }
         }
 

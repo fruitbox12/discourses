@@ -41,7 +41,7 @@ const DiscoursePop = ({ data }: { data: any }) => {
                             <div className="flex items-center w-full gap-8 mt-2">
                                 <div className="flex flex-col">
                                     <p className=" w-full text-white/60 text-xs font-Lexend leading-5 tracking-wide">Total Stake:</p>
-                                    <h3 className="text-gradient text-lg font-bold tracking-wider">Ξ {getFundTotal(data.funds)}</h3>
+                                    <h3 className="text-gradient text-lg font-bold tracking-wider">{getFundTotal(data.funds)} MATIC</h3>
                                 </div>
 
                                 <div className="w-[2px] h-1/2 bg-[#212427]"></div>

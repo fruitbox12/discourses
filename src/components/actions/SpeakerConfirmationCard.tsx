@@ -11,6 +11,8 @@ import DiscourseHub from '../../web3/abi/DiscourseHub.json';
 import Addresses from '../../web3/addresses.json';
 import Web3 from "web3";
 import { ethers } from "ethers";
+import { useContractWrite, useWaitForTransaction } from "wagmi";
+import { contractData } from "../../helper/ContractHelper";
 
 
 const getDiscourseContract = async () => {
@@ -93,28 +95,47 @@ const SpeakerConfirmationCard = ({ data }: { data: any }) => {
         }
     })
 
-    const handleConfirmation = async () => {
-        await loadWeb3();
-        try {
-            const tx = await (window as any).contract.methods.speakerConfirmation(data.propId).send({ from: user.walletAddress });
-            console.log(tx);
-            speakerConfirmation({
-                variables: {
-                    propId: data.propId,
-                },
-                onCompleted: (data) => {
-                    setLoading(false);
-                    refetch();
-                },
-                onError: (error) => {
-                    setLoading(false);
-                    console.log('Something went wrong', error);
-                }
-            })
-        } catch (error) {
-            setLoading(false);
-            console.log('Something went wrong', error);
+    const confirmSpeaker = useContractWrite(
+        contractData(),
+        'speakerConfirmation',
+        {
+            args: [data.propId],
+            overrides: { from: user.walletAddress },
+            onSettled: (txn) => {
+                console.log('submitted:', txn);
+            },
+            onError: (error) => {
+                setLoading(false);
+            }
         }
+    )
+
+    const waitForTxn = useWaitForTransaction(
+        {
+            hash: confirmSpeaker.data?.hash,
+            onSettled: (txn) => {
+                console.log('settled:', txn);
+                if (txn) {
+                    speakerConfirmation({
+                        variables: {
+                            propId: data.propId,
+                        },
+                        onCompleted: () => {
+                            setLoading(false);
+                            refetch();
+                        },
+                        onError: (error) => {
+                            setLoading(false);
+                            console.log('Something went wrong', error);
+                        }
+                    })
+                }
+            }
+        }
+    )
+
+    const handleConfirmation = async () => {
+        confirmSpeaker.write();
     }
 
     const handleClick = async () => {

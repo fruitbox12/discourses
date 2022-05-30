@@ -88,8 +88,6 @@ const InvitePage = () => {
                 }
                 setLoading(false);
             } else {
-                console.log("linking twitter");
-                
                 linkTwitter({
                     context: {
                         headers: {

@@ -106,3 +106,7 @@ export const isFuture = (timestamp: string) => {
     const date = new Date(timestamp);
     return now.getTime() < date.getTime();
 }
+
+export const isDisputable = (date : Date) => {
+    return new Date().getTime() < date.getTime() + (3 * 24 * 60 * 60 * 1000);
+}

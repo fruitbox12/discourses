@@ -73,13 +73,8 @@ const TimePickerDialog = ({ open, setOpen, index, dates, slots, setSlots }:
 
     const updateSlots = () => {
         if (selectedSlots.length < 3) {
-            console.log('returning');
-            
             return;
         }
-
-        console.log('updating slots');
-        
         let newSlots = [...slots];
         if (newSlots.find(s => s.date === dates[index].toISOString())) {
             newSlots = newSlots.filter(s => s.date !== dates[index].toISOString());
