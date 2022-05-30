@@ -15,10 +15,9 @@ import useLoginCheck from "../hooks/useLoginCheck";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { shortAddress } from "../helper/StringHelper";
+import WalletOptionsLink from "../components/dialogs/WalletOptionsLink";
 
 const InvitePage = () => {
-
-    const [walletAddress, connectingWallet, connectWalllet, setWin] = useWallet(window as any);
 
     const route = useRouter();
     const user = useSelector((state: RootState) => state.user);
@@ -44,7 +43,6 @@ const InvitePage = () => {
     });
 
     const { data: session } = useSession();
-    const { initWin } = useLoginCheck(window as any);
 
     // useEffect(() => {
     //     // initial signout if there is any login
@@ -111,23 +109,14 @@ const InvitePage = () => {
     }, [tData])
 
 
-
-    useEffect(() => {
-        if ((window as any).ethereum) {
-            initWin(window as any);
-        }
-    }, [initWin])
-
     const handleConnectWallet = () => {
         if (window && (window as any).ethereum) {
-            setWin(window as any);
-            connectWalllet();
+            
         } else {
             console.log("window undefined");
 
         }
     }
-
 
 
     return (
@@ -155,16 +144,13 @@ const InvitePage = () => {
                             <h3 className="text-white/70 text-xl font-semibold">Link Accounts</h3>
                             {<p className="text-[#c6c6c6] text-xs w-[50%] my-4">Link you wallet address and twitter account for a better experience with Discourses</p>}
 
-                            {user.walletAddress === "" && <button onClick={() => handleConnectWallet()} className="button-s bg-gradient w-max flex items-center gap-4 justify-center my-2">
-                                <AgoraBtnIcon />
-                                <p className="text-[12px] text-black font-semibold">Connect Wallet</p>
-                            </button>}
+                            {user.walletAddress === "" && <WalletOptionsLink /> }
                             {user.isLoggedIn && <div className='cursor-default py-2 flex items-center w-max gap-2 text-[#616162] text-sm font-semibold'>
                                 <div className='flex items-center overflow-clip bg-gradient w-6 h-6 rounded-xl' >
                                     <img className="w-6 h-6 object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${user.walletAddress}`} alt="" />
                                 </div>
                                 <div className="flex flex-col justify-center">
-                                    <p className='text-white text-xs'>{shortAddress(user.walletAddress === "" ? walletAddress : user.walletAddress)}</p>
+                                    <p className='text-white text-xs'>{shortAddress(user.walletAddress === "" ? '' : user.walletAddress)}</p>
                                 </div>
                             </div>}
                             {!alreadyLinked && duplicateHandle &&<button onClick={() => signIn()} className="button-o px-4 py-2 w-max flex items-center gap-4 justify-center my-2">
