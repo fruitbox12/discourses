@@ -9,6 +9,7 @@ import TopBar from "../components/topbar/TopBar";
 import FundDiscourseDialog from "../components/dialogs/FundDiscourseDialog";
 import { CloseIcon } from "../components/utils/SvgHub";
 import CreateDiscourseDialog from "../components/dialogs/CreateDiscourseDailog";
+import { CreateObj } from "../lib/Types";
 
 
 const timeDuration = [
@@ -22,7 +23,7 @@ const timeDuration = [
     { id: 8, sec: 1800, value: "1/2 Hour", title: "1/2 Hour ~ (1800s)", unavailable: false },
 ]
 
-let mockD = {
+let mockD: CreateObj = {
     speakers: [
         {
             name: "",
@@ -60,7 +61,7 @@ const CreateDiscoursePage = () => {
     const [topicCount, setTopicCount] = useState(3)
     const [openFundDialog, setOpenFundDialog] = useState(false);
     const [formError, setFormError] = useState("");
-    const [newDiscourse, setNewDiscourse] = useState(mockD);
+    const [newDiscourse, setNewDiscourse] = useState<CreateObj>(mockD);
 
     const handleSubmit = () => {
         if (speakerOne.length > 0 && speakerTwo.length > 0 && title.length > 0 && description.length > 0 && checkTopics(topics)) {
@@ -118,7 +119,7 @@ const CreateDiscoursePage = () => {
     }
 
     const getData = () => {
-        let data = {
+        let data: CreateObj = {
             speakers: [
                 {
                     name: speakerOne,
