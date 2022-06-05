@@ -7,7 +7,7 @@ export const getFundTotal = (funds: Array<any>) => {
         sum += +ethers.utils.formatEther(funds[i].amount);
     }
 
-    return sum;
+    return sum.toFixed(5);
 }
 
 export const getFund = (fund: number) => {
