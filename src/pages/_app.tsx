@@ -1,10 +1,5 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import store from '../store'
-import { persistor } from '../store'
-import { Provider as RProvider } from 'react-redux'
-import { PersistGate } from 'redux-persist/lib/integration/react'
-
 import { ApolloProvider } from '@apollo/client'
 import { useApollo } from '../lib/apollo'
 
@@ -14,59 +9,99 @@ import { HMSRoomProvider } from '@100mslive/react-sdk';
 
 //wagmi
 import { providers } from 'ethers';
-import { chain, createClient, WagmiConfig } from 'wagmi';
+import { Chain, chain, configureChains, createClient, WagmiConfig } from 'wagmi';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import SEOHome from '../components/utils/SEOHome'
+import ContextWrapper from '../components/utils/ContextWrapper'
+
+
+const auroraChain: Chain = {
+  id: 1313161555,
+  name: 'Aurora Testnet',
+  network: 'aurora',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Ethereum',
+    symbol: 'ETH'
+  },
+  rpcUrls: {
+    default: 'https://aurora-testnet.infura.io/v3/a4d6ff8d0a7c4b93a9a4ac41adc048c8'
+  },
+  blockExplorers: {
+    etherscan: {
+      name: 'Aurorascan',
+      url: 'https://testnet.aurorascan.dev/',
+    },
+    default: {
+      name: 'Aurorascan',
+      url: 'https://testnet.aurorascan.dev/'
+    }
+  },
+  testnet: true
+}
+
+const { provider, chains } = configureChains(
+  [chain.polygonMumbai, auroraChain],
+  [
+    alchemyProvider({ alchemyId: 'ksqleRX25aRSLQ9uawfAwVTlQ8gKLULj' }),
+    jsonRpcProvider({
+      rpc: (chain) => {
+        if (chain.id !== auroraChain.id) return null
+        return { http: chain.rpcUrls.default }
+      }
+    })
+  ]
+)
 
 const connectors = () => {
   return [
     new WalletConnectConnector({
+      chains,
       options: {
-        chainId: chain.polygonMumbai.id,
-        rpc: { 80001: "https://polygon-mumbai.g.alchemy.com/v2/ksqleRX25aRSLQ9uawfAwVTlQ8gKLULj" }
+        qrcode: true,
       }
     }),
     new MetaMaskConnector({
-      chains: [chain.polygonMumbai],
+      chains,
       options: {
         shimDisconnect: true
       }
     }),
     new InjectedConnector({
-      chains: [chain.polygonMumbai],
+      chains,
     })
   ]
 }
 
 const wagmiClient = createClient({
   autoConnect: true,
-  provider(config) {
-    return new providers.AlchemyProvider(config.chainId, 'ksqleRX25aRSLQ9uawfAwVTlQ8gKLULj');
-  },
+  // provider(config) {
+  //   return new providers.AlchemyProvider(config.chainId, 'ksqleRX25aRSLQ9uawfAwVTlQ8gKLULj');
+  // },
+  provider,
   connectors
 })
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const apolloClient = useApollo(pageProps.initialApolloState)
   return (
-    <RProvider store={store}>
-      <PersistGate persistor={persistor} loading={null}>
-        {() => (
-            <WagmiConfig client={wagmiClient}>
-              <ApolloProvider client={apolloClient}>
-                <SessionProvider session={session}>
-                  <HMSRoomProvider>
-                    <SEOHome />
-                    <Component {...pageProps} />
-                  </HMSRoomProvider>
-                </SessionProvider>
-              </ApolloProvider>
-            </WagmiConfig>
-          )}
-      </PersistGate>
-    </RProvider>
+    <WagmiConfig client={wagmiClient}>
+      <ApolloProvider client={apolloClient}>
+        <SessionProvider session={session}>
+          <HMSRoomProvider>
+            <ContextWrapper>
+              <SEOHome />
+              <Component {...pageProps} />
+            </ContextWrapper>
+          </HMSRoomProvider>
+        </SessionProvider>
+      </ApolloProvider>
+    </WagmiConfig>
+
   )
 }
 

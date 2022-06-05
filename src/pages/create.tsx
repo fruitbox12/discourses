@@ -1,15 +1,20 @@
 import Layout from "../components/layout/Layout";
 import Branding from "../components/utils/Branding";
 import Head from 'next/head'
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { PercentageSquare, Timer, Timer1 } from "iconsax-react";
 import { Listbox } from '@headlessui/react'
 import { useRouter } from "next/router";
 import TopBar from "../components/topbar/TopBar";
 import FundDiscourseDialog from "../components/dialogs/FundDiscourseDialog";
-import { CloseIcon } from "../components/utils/SvgHub";
+import { CloseIcon, Polygon16 } from "../components/utils/SvgHub";
 import CreateDiscourseDialog from "../components/dialogs/CreateDiscourseDailog";
-import { CreateObj } from "../lib/Types";
+import { CreateObj, ToastTypes } from "../lib/Types";
+import AppContext from "../components/utils/AppContext";
+import { uuid } from "uuidv4";
+import ChainTag from "../components/utils/ChainTag";
+import { useNetwork } from "wagmi";
+import BDecoration from "../components/utils/BDecoration";
 
 
 const timeDuration = [
@@ -62,14 +67,21 @@ const CreateDiscoursePage = () => {
     const [openFundDialog, setOpenFundDialog] = useState(false);
     const [formError, setFormError] = useState("");
     const [newDiscourse, setNewDiscourse] = useState<CreateObj>(mockD);
+    const { addToast, loggedIn } = useContext(AppContext);
+    const [notified, setNotified] = useState(false);
+    const { activeChain } = useNetwork();
+
+    useEffect(() => {
+        if (!loggedIn) {
+            route.push("/");
+        }
+    },[loggedIn, route])
 
     const handleSubmit = () => {
         if (speakerOne.length > 0 && speakerTwo.length > 0 && title.length > 0 && description.length > 0 && checkTopics(topics)) {
             setNewDiscourse(getData());
             setOpenFundDialog(true)
         } else {
-            console.log(getData());
-
             setFormError("Please fill all the details")
         }
     }
@@ -161,19 +173,19 @@ const CreateDiscoursePage = () => {
             </Head>
             <Layout>
 
-                <div className="h-[100%] fixed top-0 left-0 overflow-clip">
-                    <img className="w-full h-full" src="/tint.png" alt="" />
-                </div>
+                <BDecoration />
 
                 <div className='w-full min-h-screen flex flex-col py-10 gap-4 z-10 '>
                     {/* TopSection */}
 
                     <TopBar />
 
-                    <div className="flex flex-col w-max self-center md:justify-between mt-10 mx-10 lg:mx-0 gap-2">
+                    <div className="flex flex-col w-max self-center md:justify-between mt-10 mx-10 lg:mx-0 gap-4">
 
-
-                        <h3 className='text-white font-semibold mt-10'>Start a Discourse</h3>
+                        <div className="flex items-center justify-between w-full">
+                            <h3 className='text-white font-semibold '>Start a Discourse</h3>
+                            <ChainTag chainId={activeChain?.id!} />
+                        </div>
 
                         {formError !== "" && <div className="bg-card p-4 rounded-xl max-w-xl flex justify-between items-center">
                             <p className="text-xs text-yellow-300">{formError}</p>

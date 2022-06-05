@@ -12,3 +12,20 @@ export type CreateObj = {
     initialFunding: string;
     fundingPeriod: number;
 }
+
+export enum ToastTypes {
+    success = "success",
+    error = "error",
+    info = "info",
+    warning = "warning",
+    event = "event",
+    wait = "wait",
+}
+
+export type Toast = {
+    title: string;
+    body: string;
+    type: ToastTypes;
+    id: string;
+    duration?: number;
+}

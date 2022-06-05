@@ -4,25 +4,15 @@ import { useRouter } from 'next/router';
 import Web3 from "web3";
 import { ethers } from "ethers";
 import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store';
 import { useLazyQuery, useMutation, gql } from '@apollo/client';
 import UseAnimations from 'react-useanimations';
 import loading from 'react-useanimations/lib/loading';
-import { GET_NONCE } from '../../lib/queries'
-import { VERIFY_SIG } from '../../lib/mutations'
-import { setUser } from '../../store/slices/userSlice';
+
 
 const ConnectWalletDailog = ({ open, setOpen }: { open: boolean, setOpen: Dispatch<SetStateAction<boolean>> }) => {
     let buttonRef = useRef(null);
 
     const [minting, setMinting] = useState(false);
-    const [ walletAddress, setWalletAddress ] = useState('');
-
-    const route = useRouter();
-
-    const dispatch = useDispatch();
-    const user = useSelector((state: RootState) => state.user);
 
     const handleClose = () => {
         setOpen(false);

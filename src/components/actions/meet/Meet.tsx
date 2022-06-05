@@ -10,23 +10,23 @@ import {
     HMSNotificationTypes,
     selectPermissions
 } from '@100mslive/react-sdk';
-import { useEffect, useCallback, useRef, useState } from "react";
+import { useEffect, useCallback, useRef, useState, useContext } from "react";
 import { CallSlash, Message, MessageText1, Microphone2, MicrophoneSlash, Profile2User, Send, Send2, Video, VideoSlash } from "iconsax-react";
 import Chat from "./Chat";
 import { shortAddress } from "../../../helper/StringHelper";
 import EndCallPop from "./EndCallPop";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { END_MEET } from "../../../lib/mutations";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../store";
 import { GET_DISCOURSE_BY_ID } from "../../../lib/queries";
+import AppContext from "../../utils/AppContext";
+import { ToastTypes } from "../../../lib/Types";
+import { uuid } from "uuidv4";
 
 
 const END_EVENT = "END_MEET_REQUEST";
 const REJECT_END_EVENT = "END_MEET_REQUEST_REJECT";
 
 const Meet = ({ dData }: { dData: any }) => {
-
     const hmsActions = useHMSActions();
     const [username, setUsername] = useState('');
     const [token, setToken] = useState('');
@@ -35,8 +35,9 @@ const Meet = ({ dData }: { dData: any }) => {
     const [ endEventRequest, setEndEventRequest ] = useState(false);
     const [ endEventRequested, setEndEventRequested ] = useState(false);
 
+    const  { addToast } = useContext(AppContext);
+
     const notification = useHMSNotifications();
-    const user = useSelector((state: RootState) => state.user);
 
     const isConnected = useHMSStore(selectIsConnectedToRoom);
     const audioEnabled = useHMSStore(selectIsLocalAudioEnabled);
@@ -62,11 +63,33 @@ const Meet = ({ dData }: { dData: any }) => {
     useEffect(() => {
     }, [isConnected, audioEnabled, videoEnabled]);
 
+    
     useEffect(() => {
         if (!notification) {
             return;
         }
 
+        console.log('n',notification);
+
+        if (notification.type === HMSNotificationTypes.PEER_JOINED) {
+            addToast({
+                title: 'New User Joined',
+                body: shortAddress(notification.data?.customerUserId),
+                type: ToastTypes.event,
+                id: uuid(),
+                duration: 3000
+            })
+        }
+        if (notification.type === HMSNotificationTypes.PEER_LEFT) {
+            addToast({
+                title: 'User Left',
+                body: shortAddress(notification.data?.customerUserId),
+                type: ToastTypes.event,
+                id: uuid(),
+                duration: 3000
+            })
+        }
+        
         if (notification.type === HMSNotificationTypes.NEW_MESSAGE) {
             if (!showChat && notification.data.type === "chat") {
                 setShowPing(true);
@@ -108,13 +131,9 @@ const Meet = ({ dData }: { dData: any }) => {
     }
 
     const [ endMeet ] = useMutation(END_MEET, {
-        context: {
-            headers: {
-                authorization: `Bearer ${user.token}`
-            }
-        },
         variables: {
-            propId: dData.propId
+            propId: dData.propId,
+            chainId: dData.chainId,
         }
     })
 
@@ -187,7 +206,7 @@ const Meet = ({ dData }: { dData: any }) => {
                             </div>
                         }
 
-                    <div className="grid grid-cols-2 grid-flow-row w-full gap-2">
+                    <div className=" flex flex-col sm:grid sm:grid-cols-2 grid-flow-row w-full gap-2">
                         {
                             peers.filter(p => p.roleName === "speaker").slice(0,2).map((peer) => (
                                 <VideoTile key={peer.id} peer={peer} />

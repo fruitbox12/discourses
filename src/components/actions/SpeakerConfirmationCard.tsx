@@ -1,9 +1,7 @@
 import LoadingSpinner from "../utils/LoadingSpinner";
 import { SpeakerConfirmationIcon } from "../utils/SvgHub";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { formatDate, getTime, getTimeFromDate } from "../../helper/TimeHelper";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { SET_WALLETADDRESS, SPEAKER_CONFIRMATION } from "../../lib/mutations";
 import { GET_DISCOURSE_BY_ID } from "../../lib/queries";
@@ -11,101 +9,66 @@ import DiscourseHub from '../../web3/abi/DiscourseHub.json';
 import Addresses from '../../web3/addresses.json';
 import Web3 from "web3";
 import { ethers } from "ethers";
-import { useContractWrite, useWaitForTransaction } from "wagmi";
+import { useContractWrite, useNetwork, useWaitForTransaction } from "wagmi";
 import { contractData } from "../../helper/ContractHelper";
+import AppContext from "../utils/AppContext";
+import { uuid } from "uuidv4";
+import { getChainName } from "../../Constants";
+import { ToastTypes } from "../../lib/Types";
 
-
-const getDiscourseContract = async () => {
-    return await new (window as any).web3.eth.Contract(
-        DiscourseHub,
-        Addresses.discourse_daimond
-    )
-}
 
 const SpeakerConfirmationCard = ({ data }: { data: any }) => {
 
     const [loading, setLoading] = useState(false);
-
-    const user = useSelector((state: RootState) => state.user);
-
-    const getSpeakerIndex = (speakers: any) => {
-        if (speakers.length >= 2) {
-            if (speakers[0].username === user.t_handle) {
-                return 0;
-            }
-            if (speakers[1].username === user.t_handle) {
-                return 1;
-            }
-        }
-        return -1;
-    }
-
-    const getSpeaker = (speakers: any) => {
-        const index = getSpeakerIndex(speakers);
-        if (index !== -1) {
-            return speakers[index];
-        }
-        return null;
-    }
+    const { walletAddress, t_handle, addToast } = useContext(AppContext);
+    const { activeChain } = useNetwork();
 
     const speakerAddressSet = (speakers: any) => {
         if (speakers.length >= 2) {
-            const speaker = speakers.find((s: any) => s.username === user.t_handle);
-            if (speaker.address === user.walletAddress) {
+            const speaker = speakers.find((s: any) => s.username === t_handle);
+            if (speaker.address === walletAddress) {
                 return true;
             }
         }
         return false;
     }
 
-    ///////////////////////////////
-    ///////  Logics  //////////////
-    ///////////////////////////////
 
-    const loadWeb3 = async () => {
-        const win = window as any;
-        if (win.ethereum) {
-            win.web3 = new Web3(win.ethereum);
-            await win.ethereum.enable();
-            (window as any).contract = await getDiscourseContract();
-        } else {
-            // Show metamask error
-        }
-    }
-
-    const [ refetch ] = useLazyQuery(GET_DISCOURSE_BY_ID, {
+    const [refetch] = useLazyQuery(GET_DISCOURSE_BY_ID, {
         variables: {
             id: data.id
         }
     });
 
-    const [ setWalletAddress ] = useMutation(SET_WALLETADDRESS, {
-        context: {
-            headers: {
-                authorization: `Bearer ${user.token}`
-            }
-        }
-    })
+    const [setWalletAddress] = useMutation(SET_WALLETADDRESS)
 
-    const [ speakerConfirmation ] = useMutation(SPEAKER_CONFIRMATION, {
-        context: {
-            headers: {
-                authorization: `Bearer ${user.token}`
-            }
-        }
-    })
+    const [speakerConfirmation] = useMutation(SPEAKER_CONFIRMATION)
 
     const confirmSpeaker = useContractWrite(
-        contractData(),
+        contractData(activeChain?.id!),
         'speakerConfirmation',
         {
             args: [data.propId],
-            overrides: { from: user.walletAddress },
+            overrides: { from: walletAddress },
             onSettled: (txn) => {
                 console.log('submitted:', txn);
+                addToast({
+                    title: "Transaction Submitted",
+                    body: `Waiting for transaction to be mined. Hash: ${txn?.hash}`,
+                    type: ToastTypes.wait,
+                    duration: 5000,
+                    id: uuid()
+                })
             },
             onError: (error) => {
                 setLoading(false);
+                addToast({
+                    title: "Error Occured",
+                    body: error.message,
+                    type: ToastTypes.error,
+                    duration: 5000,
+                    id: uuid()
+                })
             }
         }
     )
@@ -119,13 +82,28 @@ const SpeakerConfirmationCard = ({ data }: { data: any }) => {
                     speakerConfirmation({
                         variables: {
                             propId: data.propId,
+                            chainId: data.chainId
                         },
                         onCompleted: () => {
                             setLoading(false);
+                            addToast({
+                                title: "Confirmation successful",
+                                body: `You have confirmed your participation in the discussion.`,
+                                type: ToastTypes.success,
+                                duration: 5000,
+                                id: uuid()
+                            })
                             refetch();
                         },
                         onError: (error) => {
                             setLoading(false);
+                            addToast({
+                                title: "Something went wrong",
+                                body: `Please try again later. If the problem persists, please contact us.`,
+                                type: ToastTypes.error,
+                                duration: 5000,
+                                id: uuid()
+                            })
                             console.log('Something went wrong', error);
                         }
                     })
@@ -139,23 +117,49 @@ const SpeakerConfirmationCard = ({ data }: { data: any }) => {
     }
 
     const handleClick = async () => {
-        setLoading(true);
-        if (speakerAddressSet(data.speakers)) {
-            handleConfirmation();
+        if (activeChain?.id === data.chainId) {
+            setLoading(true);
+            addToast({
+                title: "Waiting for confirmation",
+                body: `Please wait and do not close the window while the transaction is processing. It may take a few minutes to complete.`,
+                type: ToastTypes.wait,
+                duration: 5000,
+                id: uuid()
+            })
+            if (speakerAddressSet(data.speakers)) {
+                handleConfirmation();
+            } else {
+                setWalletAddress({
+                    variables: {
+                        propId: data.propId,
+                        chainId: data.chainId
+                    },
+                    onCompleted: (data) => {
+                        handleConfirmation();
+                    },
+                    onError: (error) => {
+                        console.log('Something went wrong', error);
+                        addToast({
+                            title: "Something went wrong",
+                            body: `Please try again later. If the problem persists, please contact us.`,
+                            type: ToastTypes.error,
+                            duration: 5000,
+                            id: uuid()
+                        })
+                        setLoading(false);
+                    }
+                })
+            }
         } else {
-            setWalletAddress({
-                variables: {
-                    propId: data.propId
-                },
-                onCompleted: (data) => {
-                    handleConfirmation();
-                },
-                onError: (error) => {
-                    console.log('Something went wrong', error);
-                    setLoading(false);
-                }
+            addToast({
+                title: "Chain Error",
+                body: `This discourse is on [${getChainName(data.chainId)}]. Please use the correct chain.`,
+                type: ToastTypes.error,
+                duration: 5000,
+                id: uuid()
             })
         }
+
     }
 
 

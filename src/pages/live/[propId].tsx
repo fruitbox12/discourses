@@ -10,13 +10,11 @@ import {
     useHMSNotifications,
     HMSNotificationTypes,
 } from '@100mslive/react-sdk';
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import MeetLayout from "../../components/layout/MeetLayout";
 import Meet from "../../components/actions/meet/Meet";
 import { useRouter } from "next/router";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store";
 import { is24hrOld } from "../../helper/TimeHelper";
 import TokenErrorCard from "../../components/actions/meet/TokenErrorCard";
 import { GET_DISCOURSES, GET_DISCOURSE_BY_ID } from "../../lib/queries";
@@ -25,17 +23,35 @@ import { Microphone2, MicrophoneSlash, Video, VideoSlash } from "iconsax-react";
 import { shortAddress } from "../../helper/StringHelper";
 import { CalendarDoneIcon } from "../../components/utils/SvgHub";
 import Link from "next/link";
-import { useDispatch } from "react-redux";
-import { clearMeet } from "../../store/slices/meetSlice";
 import { END_MEET } from "../../lib/mutations";
+import AppContext from "../../components/utils/AppContext";
+import Cookies from "js-cookie";
+import BDecoration from "../../components/utils/BDecoration";
 
 const LivePage = () => {
 
     const route = useRouter();
-    const dispatch = useDispatch();
+    const [token, setToken] = useState("");
+
+    useEffect(() => {
+        if (window && window !== undefined) {
+            const token = Cookies.get('meetToken') + "";
+            setToken(token);
+
+            if (token === "" || token === "undefined" || !loggedIn) {
+                setTokenError(true);
+            } else {
+                if (is24hrOld(new Date(timeStamp))) {
+                    setTokenError(true);
+                }
+            }
+        }
+    }, [])
 
     const { propId } = route.query;
     // console.log(propId);
+
+    const { loggedIn, walletAddress, timeStamp } = useContext(AppContext);
 
     const hmsActions = useHMSActions();
     const [username, setUsername] = useState('');
@@ -45,8 +61,7 @@ const LivePage = () => {
     const isConnected = useHMSStore(selectIsConnectedToRoom);
     const audioEnabled = useHMSStore(selectIsLocalAudioEnabled);
     const videoEnabled = useHMSStore(selectIsLocalVideoEnabled);
-    const meet = useSelector((state: RootState) => state.meet);
-    const user = useSelector((state: RootState) => state.user);
+    // const meet = useSelector((state: RootState) => state.meet);
     // const [token, setToken] = useState('');
     const [tokenError, setTokenError] = useState(false);
     const [ getDiscourses ] = useLazyQuery(GET_DISCOURSES);
@@ -62,10 +77,7 @@ const LivePage = () => {
         if (!notification) {
             return;
         }
-
         if (notification.type === HMSNotificationTypes.ERROR) {
-
-            console.log('new message', notification.data);
             if (notification.data.message === "room is not active") {
                 setDiscourseLocked(true);
             }
@@ -75,14 +87,8 @@ const LivePage = () => {
 
 
     useEffect(() => {
-        if (meet.token == "" || !user.isLoggedIn) {
-            setTokenError(true);
-        } else {
-            if (is24hrOld(new Date(meet.timeStamp))) {
-                setTokenError(true);
-            }
-        }
-    }, [meet])
+        
+    }, [])
 
     useEffect(() => {
         if (propId !== "") {
@@ -91,15 +97,15 @@ const LivePage = () => {
     }, [getDiscourse, propId])
 
     useEffect(() => {
-        console.log(isConnected ? 'connected' : 'not connected');
+        console.log(isConnected ? 'connected' : 'disconnected');
     }, [isConnected]);
 
 
     const joinRoom = async () => {
-        if (user.isLoggedIn && meet.token !== "") {
+        if (loggedIn && token !== "") {
             const config = {
-                userName: user.walletAddress,
-                authToken: meet.token
+                userName: walletAddress,
+                authToken: token
             }
 
             try {
@@ -116,24 +122,25 @@ const LivePage = () => {
     
 
     useEffect(() => {
-        if (meet.token !== "" && dData && isSpeakerWallet(dData, user.walletAddress) && !meetEnded) {
+        if (token !== "" && token!== "undefined" && dData && isSpeakerWallet(dData, walletAddress) && !meetEnded) {
             const config = {
-                userName: user.walletAddress,
-                authToken: meet.token,
+                userName: walletAddress,
+                authToken: token,
                 settings: {
                     isAudioMuted: true,
                     isVideoMuted: false
                 }
             }
             try {
-
+                console.log(token);
+                
                 hmsActions.preview(config);
             } catch (error) {
                 console.log(error);
             }
         }
 
-    }, [user.walletAddress, meet.token, dData])
+    }, [walletAddress, token, dData])
 
     useEffect(() => {
         return () => {
@@ -144,18 +151,13 @@ const LivePage = () => {
     }, [])
 
 
-
-    useEffect(() => {
-        console.log(peers);
-    }, [peers])
-
     useEffect(() => {
         if (roomState === HMSRoomState.Connected) {
             setMeetingJoined(true);
         }
         if (roomState === HMSRoomState.Disconnecting || roomState === HMSRoomState.Disconnected) {
             if (meetingJoined) {
-                dispatch(clearMeet());
+                Cookies.remove('meetToken');
                 setMeetEnded(true);
                 getDiscourse();
                 getDiscourses();
@@ -184,8 +186,7 @@ const LivePage = () => {
             </Head>
 
             <MeetLayout>
-                <div className='w-32 h-32 bg-gradient rounded-full blur-3xl fixed top-24 right-72 z-0 t-all' />
-
+                <BDecoration />
                 {
                     meetEnded && <div className=' justify-center overflow-hidden w-full max-w-6xl flex gap-4 z-10 t-all'>
                         <div className="bg-card p-4 w-full max-w-sm rounded-xl flex flex-col items-center gap-2">
@@ -239,11 +240,11 @@ const LivePage = () => {
                                     <div className="flex flex-col items-center gap-2 py-4">
 
                                         <div className="w-[60%] aspect-square relative rounded-xl overflow-clip">
-                                            {!getLocalPeer() || !videoEnabled && <img className="w-[600px] h-[600px] object-cover object-center" src={`https://avatar.tobi.sh/${user.walletAddress}`} alt="" />}
+                                            {!getLocalPeer() || !videoEnabled && <img className="w-[600px] h-[600px] object-cover object-center" src={`https://avatar.tobi.sh/${walletAddress}`} alt="" />}
                                             {getLocalPeer() && videoEnabled && <VideoTile peer={getLocalPeer()} />}
                                             <div className="z-10 absolute bg-[#141515] inset-x-2 p-2 bottom-2 rounded-xl flex items-center justify-between">
 
-                                                <p className="text-white text-[10px] hidden sm:block sm:text-sm font-Lexend ">{shortAddress(user.walletAddress)}</p>
+                                                <p className="text-white text-[10px] hidden sm:block sm:text-sm font-Lexend ">{shortAddress(walletAddress)}</p>
 
                                                 <div className="flex items-center justify-center gap-2">
                                                     {getLocalPeer()?.roleName === "speaker" &&
@@ -273,9 +274,9 @@ const LivePage = () => {
                                 {   !discourseLocked && <div className="flex flex-col items-center gap-2 py-4">
 
                                         <div className="w-10 h-10 aspect-square rounded-xl overflow-clip">
-                                            <img className="w-full h-full object-cover object-center" src={`https://avatar.tobi.sh/${user.walletAddress}`} alt="" />
+                                            <img className="w-full h-full object-cover object-center" src={`https://avatar.tobi.sh/${walletAddress}`} alt="" />
                                         </div>
-                                        <p className="text-white text-sm font-Lexend ">{shortAddress(user.walletAddress)}</p>
+                                        <p className="text-white text-sm font-Lexend ">{shortAddress(walletAddress)}</p>
 
                                     </div>}
                                 {   discourseLocked && <div className="flex flex-col items-center gap-2 py-4">

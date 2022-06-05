@@ -1,5 +1,6 @@
 import { Popover } from "@headlessui/react";
 import { ArrowRight2, BoxSearch, PathTool, Profile2User } from "iconsax-react";
+import { getCurrencyName } from "../../../Constants";
 import { getFundTotal } from "../../../helper/FundHelper";
 import { shortAddress } from "../../../helper/StringHelper";
 import { getAgo, getAgoT } from "../../../helper/TimeHelper";
@@ -10,7 +11,7 @@ const DiscoursePop = ({ data }: { data: any }) => {
             {({ open }) => (
                 <>
                     <Popover.Button className={`t-all text-white ${open ? 'bg-[#212427]' : ''} hover:bg-white/10 rounded-xl font-Lexend text-sm px-4 py-2 flex items-center gap-2`}>Discourse <ArrowRight2 className={` transform t-all ${open ? 'rotate-90 ' : ' rotate-0 '}`} size='16' color="#c6c6c6" /></Popover.Button>
-                    <Popover.Panel className="absolute z-10 bg-card bg-[#141515] p-4 rounded-xl backdrop-blur-lg max-w-sm w-[400px]">
+                    <Popover.Panel className="absolute z-20 bg-card bg-[#141515] p-4 rounded-xl backdrop-blur-lg max-w-sm w-[80vw] sm:w-[400px]">
                         <div className="flex flex-col gap-2 flex-[0.6]">
                             <h3 className="text-white font-semibold text-xl">{data.title}</h3>
                             <div className="flex gap-2 items-center">
@@ -41,7 +42,7 @@ const DiscoursePop = ({ data }: { data: any }) => {
                             <div className="flex items-center w-full gap-8 mt-2">
                                 <div className="flex flex-col">
                                     <p className=" w-full text-white/60 text-xs font-Lexend leading-5 tracking-wide">Total Stake:</p>
-                                    <h3 className="text-gradient text-lg font-bold tracking-wider">{getFundTotal(data.funds)} MATIC</h3>
+                                    <h3 className="text-gradient text-lg font-bold tracking-wider">{getFundTotal(data.funds)} {getCurrencyName(data.chainId)}</h3>
                                 </div>
 
                                 <div className="w-[2px] h-1/2 bg-[#212427]"></div>

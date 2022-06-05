@@ -18,6 +18,7 @@ export const GET_DISCOURSES = gql`
                 confirmed
             }
             propId
+            chainId
             prop_description
             prop_starter
             charityPercent
@@ -59,6 +60,7 @@ export const GET_DISCOURSE_BY_ID = gql`
                 isTwitterHandle
             }
             propId
+            chainId
             prop_description
             prop_starter
             charityPercent
@@ -97,6 +99,7 @@ export const GET_DISCOURSE_BY_ID = gql`
         getSlotById(id: $id) {
             id
             propId
+            chainId
             proposed
             proposer {
                 address
@@ -136,6 +139,8 @@ export const GET_NONCE = gql`
 export const GET_USERDATA = gql`
     query GetUserData {
         getUserData {
+            username
+            walletAddress
             twitterConnected
             twitter {
                 twitter_id

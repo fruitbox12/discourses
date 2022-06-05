@@ -1,16 +1,29 @@
 import { ApolloClient, from, HttpLink, InMemoryCache } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
+import Cookies from "js-cookie";
+import { setContext } from "@apollo/client/link/context";
 
 export default function createApolloClient() {
     const httpLink = new HttpLink({
         uri: "https://agora-server-zj4ep.ondigitalocean.app/",
         // uri: "http://localhost/",
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': 'true',
-        }
+        credentials: 'include',
+        // headers: {
+        //     'Content-Type': 'application/json',
+        //     'Access-Control-Allow-Credentials': 'true',
+        //     'Authorization': 'Bearer ' + Cookies.get('jwt')
+        // }
     });
+
+    const authLink = setContext((_, { headers }) => {
+        const token = Cookies.get('jwt');
+        return {
+            headers: {
+                ...headers,
+                authorization: token ? `Bearer ${token}` : null
+            }
+        }
+    })
 
     const errorLink = onError(({ graphQLErrors, networkError}) => {
         if (graphQLErrors)
@@ -24,7 +37,7 @@ export default function createApolloClient() {
 
     return new ApolloClient({
         ssrMode: typeof window === 'undefined',
-        link: from([errorLink, httpLink]),
+        link: from([errorLink, authLink.concat(httpLink)]),
         cache: new InMemoryCache()
     })
 }

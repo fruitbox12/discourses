@@ -31,6 +31,7 @@ export const PARTICIPATE = gql`
                 name
             }
             propId
+            chainId
             prop_description
             prop_starter
             charityPercent
@@ -64,8 +65,8 @@ export const LINK_TWITTER = gql`
 `
 
 export const FUND_UPDATE = gql`
-    mutation UpdateFunding($propId: Int!, $amount: String!, $txn: String!) {
-        updateFunding(propId: $propId, amount: $amount, txn: $txn) {
+    mutation UpdateFunding($propId: Int!, $chainId : Int!, $amount: String!, $txn: String!) {
+        updateFunding(propId: $propId, chainId: $chainId, amount: $amount, txn: $txn) {
             id
             title
             description
@@ -75,6 +76,7 @@ export const FUND_UPDATE = gql`
                 address
             }
             propId
+            chainId
             prop_description
             prop_starter
             charityPercent
@@ -110,6 +112,7 @@ export const CREATE_DISCOURSE = gql`
                 isTwitterHandle
             }
             propId
+            chainId
             prop_description
             prop_starter
             charityPercent
@@ -133,10 +136,11 @@ export const CREATE_DISCOURSE = gql`
 `
 
 export const SET_WALLETADDRESS = gql`
-    mutation SetWalletAddress($propId: Int!) {
-        setWalletAddress(propId: $propId) {
+    mutation SetWalletAddress($propId: Int!, $chainId: Int! ) {
+        setWalletAddress(propId: $propId, chainId: $chainId) {
             id
             propId
+            chainId
             speakers {
                 name
                 username
@@ -149,10 +153,11 @@ export const SET_WALLETADDRESS = gql`
 `
 
 export const SPEAKER_CONFIRMATION = gql`
-    mutation SpeakerConfirmation($propId: Int!) {
-        speakerConfirmation(propId: $propId) {
+    mutation SpeakerConfirmation($propId: Int!, $chainId: Int!) {
+        speakerConfirmation(propId: $propId, chainId: $chainId) {
             id
             propId
+            chainId
             speakers {
                 name
                 username
@@ -179,6 +184,7 @@ export const PROPOSE_SLOT = gql`
         proposeSlot(slotInput: $slotInput) {
             id
             propId
+            chainId
             proposed
             proposer {
                 address
@@ -197,6 +203,7 @@ export const ACCEPT_SLOT = gql`
         acceptSlot(slotInput: $slotInput) {
             id
             propId
+            chainId
             proposed
             proposer {
                 address
@@ -207,32 +214,38 @@ export const ACCEPT_SLOT = gql`
 `
 
 export const END_MEET = gql`
-    mutation EndMeet($propId: Int) {
-        endMeet(propId: $propId)
+    mutation EndMeet($propId: Int!, $chainId: Int!) {
+        endMeet(propId: $propId, chainId: $chainId) 
     }
 `
 
 export const TERMINATE_PROPOSAL = gql`
-    mutation TerminateDiscourse($propId: Int) {
-        terminateDiscourse(propId: $propId)
+    mutation TerminateDiscourse($propId: Int!, $chainId: Int!) {
+        terminateDiscourse(propId: $propId, chainId: $chainId) 
     }
     
 `
 
 export const FUND_WITHDRAWN = gql`
-    mutation FundWithdrawn($propId: Int) {
-        fundWithdrawn(propId: $propId)
+    mutation FundWithdrawn($propId: Int!, $chainId: Int!) {
+        fundWithdrawn(propId: $propId, chainId: $chainId) 
     }
 `
 
 export const ENTER_DISCOURSE = gql`
-    mutation EnterDiscourse($propId: Int) {
-        enterDiscourse(propId: $propId)
+    mutation EnterDiscourse($propId: Int!, $chainId: Int!) {
+        enterDiscourse(propId: $propId, chainId: $chainId) 
     }
 `
 
 export const RAISE_DISPUTE = gql`
-    mutation Disputed($txnHash: String!, $propId: Int) {
-        disputed(txnHash: $txnHash, propId: $propId)
+    mutation Disputed($txnHash: String!, $propId: Int!, $chainId: Int!) {
+        disputed(txnHash: $txnHash, propId: $propId, chainId: $chainId)
+    }
+`
+
+export const TEST = gql`
+    mutation Test {
+        test
     }
 `

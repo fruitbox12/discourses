@@ -31,7 +31,7 @@
   }
 
   .button-s {
-    @apply  px-4 py-2 text-white rounded-lg bg-[#212427] t-all  active:border border-[#84B9D1] hover:ring-2 ring-[#84B9D1]/30;
+    @apply  px-4 py-2 text-white rounded-lg bg-[#212427] t-all border  active:border-[#84B9D1] border-transparent hover:ring-2 ring-[#84B9D1]/30;
   }
   .button-s-d {
     @apply  px-4 py-2 opacity-50 text-white/30 rounded-lg bg-[#212427]/60 t-all hover:ring-0  border-none outline-none;

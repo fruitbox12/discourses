@@ -1,33 +1,39 @@
 import { MessageRemove, MoneySend } from "iconsax-react";
 import { useSelector } from "react-redux";
 import { getFundClaimDate, hasWithdrawn, isPledger } from "../../helper/DataHelper";
-import { RootState } from "../../store";
 import { FUND_WITHDRAWN } from "../../lib/mutations";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { GET_DISCOURSE_BY_ID } from "../../lib/queries";
 import { formatDate, isPast } from "../../helper/TimeHelper";
-import { useContractWrite, useWaitForTransaction } from "wagmi";
+import { useContractWrite, useNetwork, useWaitForTransaction } from "wagmi";
 import { contractData } from "../../helper/ContractHelper";
+import AppContext from "../utils/AppContext";
+import { uuid } from "uuidv4";
+import { getChainName } from "../../Constants";
+import { ToastTypes } from "../../lib/Types";
 
 
 const FundClaimCardC = ({ data }: { data: any }) => {
 
     const [loading, setLoading] = useState(false);
-
-    const user = useSelector((state: RootState) => state.user);
+    const { loggedIn, walletAddress, addToast } = useContext(AppContext);
+    const { activeChain } = useNetwork();
 
     const [fundWithdrawn] = useMutation(FUND_WITHDRAWN, {
         variables: {
-            propId: data.propId
-        },
-        context: {
-            headers: {
-                authorization: `Bearer ${user.token}`
-            }
+            propId: data.propId,
+            chainId: data.chainId
         },
         onCompleted: () => {
             refetch();
+            addToast({
+                title: "Widraw Successful",
+                body: `You have successfully claimed your funds. It may take a few minutes to reflect in your wallet.`,
+                type: ToastTypes.success,
+                duration: 5000,
+                id: uuid()
+            })
         }
     })
 
@@ -41,35 +47,63 @@ const FundClaimCardC = ({ data }: { data: any }) => {
 
 
     const withdrawPro = useContractWrite(
-        contractData(),
+        contractData(activeChain?.id!),
         'proposerWithdraw',
         {
             args: [data.propId],
             overrides: {
-                from: user.walletAddress
+                from: walletAddress
             },
             onSettled: (txn) => {
                 console.log('submitted', txn);
+                addToast({
+                    title: "Transaction Submitted",
+                    body: `Waiting for transaction to be mined. Hash: ${txn?.hash}`,
+                    type: ToastTypes.wait,
+                    duration: 5000,
+                    id: uuid()
+                })
             },
             onError: (error) => {
                 setLoading(false);
+                addToast({
+                    title: "Something went wrong",
+                    body: error.message,
+                    type: ToastTypes.wait,
+                    duration: 5000,
+                    id: uuid()
+                })
             }
         }
     )
 
     const withdrawSpeaker = useContractWrite(
-        contractData(),
+        contractData(activeChain?.id!),
         'speakerWithdraw',
         {
             args: [data.propId],
             overrides: {
-                from: user.walletAddress
+                from: walletAddress
             },
             onSettled: (txn) => {
                 console.log('submitted', txn);
+                addToast({
+                    title: "Transaction Submitted",
+                    body: `Waiting for transaction to be mined. Hash: ${txn?.hash}`,
+                    type: ToastTypes.wait,
+                    duration: 5000,
+                    id: uuid()
+                })
             },
             onError: (error) => {
                 setLoading(false);
+                addToast({
+                    title: "Something went wrong",
+                    body: error.message,
+                    type: ToastTypes.wait,
+                    duration: 5000,
+                    id: uuid()
+                })
             }
         }
     )
@@ -91,11 +125,28 @@ const FundClaimCardC = ({ data }: { data: any }) => {
     })
 
     const handleClaim = async () => {
-        setLoading(true);
-        if (user.walletAddress === data.prop_starter) {
-            withdrawPro.write();
+        if (activeChain?.id === data.chainId) {
+            setLoading(true);
+            addToast({
+                title: "Waiting for confirmation",
+                body: `Please approve the transaction on your wallet. It may take a few minutes to complete.`,
+                type: ToastTypes.wait,
+                duration: 5000,
+                id: uuid()
+            })
+            if (walletAddress === data.prop_starter) {
+                withdrawPro.write();
+            } else {
+                withdrawSpeaker.write();
+            }
         } else {
-            withdrawSpeaker.write();
+            addToast({
+                title: "Different Chain",
+                body: `This discourse is on [${getChainName(data.chainId)}]. Please use the correct chain.`,
+                type: ToastTypes.error,
+                duration: 5000,
+                id: uuid()
+            })
         }
     }
 
@@ -117,11 +168,11 @@ const FundClaimCardC = ({ data }: { data: any }) => {
                 </p>
             }
             {
-                !user.isLoggedIn &&
+                !loggedIn &&
                 <p className="text-yellow-200/70 text-[10px] font-medium bg-yellow-200/10 px-2 rounded-md mt-2 py-1">Connect your wallet to withdraw your fund.</p>
             }
             {
-                isPast(getFundClaimDate(data).toISOString()) && !hasWithdrawn(data, user.walletAddress) &&
+                isPast(getFundClaimDate(data).toISOString()) && !hasWithdrawn(data, walletAddress) &&
                 <>
                     {!loading && <button onClick={handleClaim} className="button-s text-[#c6c6c6] font-Lexend text-sm mt-2">
                         Claim Funds

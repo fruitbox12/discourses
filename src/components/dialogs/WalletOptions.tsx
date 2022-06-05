@@ -1,65 +1,28 @@
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { Popover, Transition } from "@headlessui/react";
 import { ArrowRight2, BoxSearch, PathTool, Profile2User, Wallet1 } from "iconsax-react";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useContext, useEffect, useState } from "react";
 import { Connector, useAccount, useConnect, useSignMessage } from "wagmi";
 import { VERIFY_SIG } from "../../lib/mutations";
 import { GET_NONCE, GET_USERDATA } from "../../lib/queries";
-import { RootState } from "../../store";
-import { setUser, updateTwitter } from "../../store/slices/userSlice";
+import AppContext from "../utils/AppContext";
 import { MetamaskIcon, NullWalletIcon, WalletConnectIcon } from "../utils/SvgHub";
 
 const WalletOptionsPopUp = () => {
 
-    const dispatch = useDispatch();
-	const route = useRouter();
-
-	const user = useSelector((state: RootState) => state.user);
+	const { refresh, loggedIn } = useContext(AppContext);
     const { connectors, connectAsync, isConnecting, isConnected, data: wData } = useConnect();
     const { data: smData, signMessageAsync } = useSignMessage();
     const [walletAddress, setWalletAddress] = useState('');
 	const account = useAccount();
 
+	const { refetch } = useQuery(GET_USERDATA);
     const [getNonce, { data: nonceData, loading: nonceLoading, error: nonceError }] = useLazyQuery(GET_NONCE);
-    const [getAccountData, { data: accountData, loading: accountLoading, error: accountError }] = useLazyQuery(GET_USERDATA, {
-		fetchPolicy: 'network-only',
-		context: {
-			headers: {
-				authorization: `Bearer ${user.token}`
-			}
-		},
-		onCompleted: (data) => {
-			if (data && data.getUserData) {
-				dispatch(
-					updateTwitter({
-						tConnected: data.getUserData.twitterConnected ? true : false,
-						t_handle: data.getUserData.twitter.twitter_handle ? data.getUserData.twitter.twitter_handle : "",
-						t_name: data.getUserData.twitter.twitter_name ? data.getUserData.twitter.twitter_name : "",
-						t_id: data.getUserData.twitter.twitter_id ? data.getUserData.twitter.twitter_id : "",
-						t_img: data.getUserData.twitter.image_url ? data.getUserData.twitter.image_url : "",
-					})
-				)
-			}
-		}
-	});
 	const [verifySig, { data, loading: sigLoading, error: sigError }] = useMutation(VERIFY_SIG, {
 		fetchPolicy: 'network-only',
 		onCompleted: (data) => {
 			if (data) {
-				dispatch(setUser({
-					token: data.verifySignature.token,
-					username: data.verifySignature.username,
-					walletAddress: data.verifySignature.address,
-					expiresAt: getExpTime(),
-					isLoggedIn: true,
-					tConnected: false,
-					t_handle: "",
-					t_name: "",
-					t_id: "",
-					t_img: ""
-				}));
+				refresh();
 			}
 		},
 		onError: (error) => {
@@ -67,46 +30,14 @@ const WalletOptionsPopUp = () => {
 		}
 	});
 
-	const getExpTime = () => {
-		let date = new Date();
-		let expTimeInMilli = new Date().getTime();
-		date.setTime(expTimeInMilli + (1000 * 60 * 60 * 24));
-		return date.toISOString();
-	}
-
     useEffect(() => {
-		if (nonceData && !user.isLoggedIn) {
-			console.log("nonceData", nonceData);
+		if (nonceData && !loggedIn) {
 			signAndVerify(nonceData.getNonce.nonce);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [nonceData])
 
-    useEffect(() => {
-		if (user.isLoggedIn) {
-			getAccountData();
-		}
-	}, [getAccountData, user]);
 
-    useEffect(() => {
-		if (data) {
-			console.log(data);
-
-			// setConnectingWallet(false);
-			dispatch(setUser({
-				token: data.verifySignature.token,
-				username: data.verifySignature.username,
-				walletAddress: data.verifySignature.address,
-				expiresAt: getExpTime(),
-				isLoggedIn: true,
-				tConnected: false,
-				t_handle: "",
-				t_name: "",
-				t_id: "",
-				t_img: ""
-			}));
-		}
-	}, [data])
 
     const signAndVerify = async (nonce: string) => {
 		const sigData = await signNonce(nonce)
@@ -115,11 +46,7 @@ const WalletOptionsPopUp = () => {
 				return;
 			});
 
-			console.log("sigData", sigData);
-			
-
-		if (sigData?.signature && !user.isLoggedIn) {
-
+		if (sigData?.signature && !loggedIn) {
 			verifySig({
 				variables: {
 					signature: sigData.signature,
@@ -139,7 +66,7 @@ const WalletOptionsPopUp = () => {
 			
 			return {
 				signature,
-				address: walletAddress
+				address: account?.data?.address
 			}
 		} catch (error) {
 			console.log(error);
@@ -164,7 +91,7 @@ const WalletOptionsPopUp = () => {
 		} else {
 			await connectAsync(connector).then(({ account }) => {
 				setWalletAddress(account);
-				getNonce({ variables: { address: walletAddress } });
+				getNonce({ variables: { address: account } });
 			}).catch((err) => {
 				console.log(err);
 			});
@@ -190,7 +117,7 @@ const WalletOptionsPopUp = () => {
                         //     leaveFrom="transform scale-100 opacity-100"
                         //     leaveTo="transform scale-95 opacity-0"
                         // >
-                            <Popover.Panel  className="absolute z-20 right-0 bg-card bg-[#141515] p-4 rounded-xl backdrop-blur-lg max-w-xs w-[200px]">
+                            <Popover.Panel  className={`${open ? 'animate-dEnter': 'animate-dExit'} absolute z-20 right-0 mt-1 bg-card bg-[#141515] p-4 rounded-xl backdrop-blur-lg max-w-xs w-[200px]`}>
                                 <div className="flex flex-col gap-2 flex-[0.6]">
                                     <h3 className="text-[#c6c6c6] text-xs">Choose provider</h3>
                                     <div className="flex gap-2 items-center flex-col">

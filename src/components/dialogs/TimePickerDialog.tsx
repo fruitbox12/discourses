@@ -127,7 +127,7 @@ const TimePickerDialog = ({ open, setOpen, index, dates, slots, setSlots }:
             <div className="flex items-center justify-center h-screen backdrop-blur-sm overflow-hidden">
                 <Dialog.Overlay className="fixed inset-0 bg-black opacity-0 w-screen h-screen overflow-hidden" />
 
-                <div className="relative bg-[#141515] border border-[#212427] max-h-[80vh]  rounded-2xl max-w-sm w-full mx-auto py-4 sm:py-6 gap-4 overflow-hidden">
+                <div className={`${open ? 'animate-dEnter': 'animate-dExit'} relative bg-[#141515] border border-[#212427] max-h-[80vh]  rounded-2xl max-w-sm w-full mx-auto py-4 sm:py-6 gap-4 overflow-hidden`}>
                     {/* Mint Post View */}
                     {<>
                         <Dialog.Title className="text-white/40 text-base  tracking-wide flex flex-col gap-2 w-max px-6">

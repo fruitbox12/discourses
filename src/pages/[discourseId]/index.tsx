@@ -3,17 +3,15 @@ import DiscourseLongList from "../../components/cards/DiscourseLongList";
 import Layout from "../../components/layout/Layout";
 import Branding from "../../components/utils/Branding";
 import { useRouter } from "next/router";
-import { BoxSearch, Clock, Maximize4, MoneyRecive, PathTool, Profile2User, Wallet1 } from "iconsax-react";
+import { BoxSearch, Clock, Maximize4, MoneyRecive, PathTool, Profile2User, Wallet1, Warning2 } from "iconsax-react";
 import { GET_DISCOURSE_BY_ID } from "../../lib/queries";
-import { PARTICIPATE } from "../../lib/mutations";
+import { PARTICIPATE, TEST } from "../../lib/mutations";
 import { useMutation, useQuery } from "@apollo/client";
 import { keccak256, shortAddress, validateEmail } from "../../helper/StringHelper";
 import { formatDate, getAgo, getAgoT, getTime, isPast } from "../../helper/TimeHelper";
 import { getFund, getFundTotal, hasFunded } from "../../helper/FundHelper";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import LoadingSpinner from "../../components/utils/LoadingSpinner";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store";
 import ConnectWalletDailog from "../../components/dialogs/ConnectWalletDailog";
 import TopBar from "../../components/topbar/TopBar";
 import { ParticipatedIcon, ParticipateIcon, RightArrowGradient, SpeakerConfirmationIcon, TwitterIcon } from "../../components/utils/SvgHub";
@@ -31,8 +29,14 @@ import SlotCard from "../../components/actions/SlotCard";
 import JoinMeetCard from "../../components/actions/meet/JoinMeetCard";
 import FundClaimCardT from "../../components/actions/FundClaimCardT";
 import FundClaimCardC from "../../components/actions/FundClaimCardC";
-import { chain } from "wagmi";
+import { chain, useNetwork } from "wagmi";
 import BDecoration from "../../components/utils/BDecoration";
+import Cookies from 'js-cookie';
+import AppContext from "../../components/utils/AppContext";
+import ChainExplorer from "../../components/utils/ChainExplorer";
+import { ToastTypes } from "../../lib/Types";
+import { uuid } from "uuidv4";
+import { getChainName, getCurrencyName } from "../../Constants";
 
 async function getDiscourseContract() {
     return await new (window as any).web3.eth.Contract(
@@ -65,7 +69,7 @@ const DiscoursePage = () => {
 
     const { discourseId } = route.query;
 
-    const user = useSelector((state: RootState) => state.user);
+    const { loggedIn, walletAddress, t_connected, t_handle, addToast } = useContext(AppContext);
 
     const { loading: Dloading, error, data } = useQuery(GET_DISCOURSE_BY_ID, {
         variables: {
@@ -84,19 +88,23 @@ const DiscoursePage = () => {
         }
     }
 
-    const load = async () => {
-        await loadWeb3();
-        (window as any).contract = await getDiscourseContract();
-    }
-
     useEffect(() => {
         setLoading(Dloading);
     }, [Dloading, data])
 
     const handleFund = async () => {
-        if (user.isLoggedIn) {
-            //fund
-            setOpenFund((prev: boolean) => !prev);
+        if (loggedIn) {
+            if (activeChain?.id === data.getDiscourseById.chainId) {
+                setOpenFund((prev: boolean) => !prev);
+            } else {
+                addToast({
+                    title: "Different Chain Error",
+                    body: `This discourse is on [ ${getChainName(data.getDiscourseById.chainId)} ]. Please use the correct chain.`,
+                    type: ToastTypes.error,
+                    duration: 6000,
+                    id: uuid()
+                })
+            }
         } else {
             setOpenConnectWallet((prev: boolean) => !prev);
         }
@@ -119,29 +127,17 @@ const DiscoursePage = () => {
         return false;
     }
 
-    const isParticipant = (data: any) => {
-
-        if (data && user.walletAddress) {
-            return data.participants.some((participant: any) => participant.address === user.walletAddress);
-        }
-        return false;
-    }
-
-    const getParticipatedEmail = (data: any) => {
-        if (data && user.walletAddress) {
-            return data.participants.find((participant: any) => participant.address === user.walletAddress).email;
-        }
-        return "";
-    }
-
-    const handleExplorer = (tx: string) => {
-        window.open(`${chain.polygonMumbai.blockExplorers?.default.url}/tx/${tx}`, "_blank");
-        
-    }
-
-    // console.log(data);
+    const { activeChain, chains, switchNetworkAsync } = useNetwork();
     
-
+    const handleHi = () => {
+        addToast({
+            title: "Waiting for confirmation",
+            body: 'Please wait while the transaction completes. It may take a few minutes.',
+            type: ToastTypes.wait,
+            id: uuid()
+        })
+    }
+    
     return (
         <div className="w-full h-screen overflow-x-clip">
             <Head>
@@ -171,10 +167,8 @@ const DiscoursePage = () => {
                         <div className="flex flex-col gap-2 w-full md:flex-[0.6]">
                             <h3 className="text-white font-semibold text-2xl">{data.getDiscourseById.title}</h3>
                             <div className="flex gap-2 items-center">
-                                <button onClick={() => handleExplorer(data.getDiscourseById.txnHash)} className="button-i hover:bg-[#1DA1F2]/30">
-                                    <BoxSearch size="16" color="#1DA1F2" />
-                                </button>
-                                <div className="h-1/2 rounded-xl w-[2px] bg-[#212427]" />
+                                <ChainExplorer data={data.getDiscourseById} />
+                                {/* <div className="h-1/2 rounded-xl w-[2px] bg-[#212427]" /> */}
                                 <PathTool size="16" color="#6a6a6a" />
                                 <div className='flex items-center gap-2 text-[#616162] text-sm font-semibold'>
                                     {/* <div className='bg-gradient-g w-4 h-4 rounded-xl' /> */}
@@ -198,7 +192,7 @@ const DiscoursePage = () => {
                             <div className="flex items-center gap-4 mt-8">
                                 <div className="flex flex-col">
                                     <p className=" w-full text-white/60 text-sm leading-5 tracking-wide">Total Stake:</p>
-                                    <h3 className="text-white/80 text-lg font-bold tracking-wider">{getFundTotal(data.getDiscourseById.funds)} MATIC</h3>
+                                    <h3 className="text-white/80 text-lg font-bold tracking-wider">{getFundTotal(data.getDiscourseById.funds)} {getCurrencyName(data.getDiscourseById.chainId)}</h3>
                                 </div>
                                 { !fundingDone(data.getDiscourseById) && <div className="h-[80%] w-[2px] bg-[#212427]" />}
                                 { !fundingDone(data.getDiscourseById) && <div className='flex flex-col gap-1'>
@@ -214,8 +208,8 @@ const DiscoursePage = () => {
                             </div>
 
                             {/* Condition to check the funding period */}
-                            {   data.getSlotById && fundingDone(data.getDiscourseById) && discourseConfirmed(data.getDiscourseById) && isSpeakerWallet(data, user.walletAddress) && getStateTS(data.getDiscourseById) === 1 && 
-                                <SlotCard id={data.getDiscourseById.id} propId={+data.getDiscourseById.propId} endTS={+data.getDiscourseById.endTS} data={data.getSlotById} />
+                            {   data.getSlotById && fundingDone(data.getDiscourseById) && discourseConfirmed(data.getDiscourseById) && isSpeakerWallet(data, walletAddress) && getStateTS(data.getDiscourseById) === 1 && 
+                                <SlotCard id={data.getDiscourseById.id} propId={+data.getDiscourseById.propId} chainId={+data.getDiscourseById.chainId} endTS={+data.getDiscourseById.endTS} data={data.getSlotById} />
                             }
 
                         </div>}
@@ -237,7 +231,7 @@ const DiscoursePage = () => {
                                     }
 
                                     {
-                                        getStateTS(data.getDiscourseById) === 3 && canClaimC(data.getDiscourseById, user.walletAddress) && !hasWithdrawn(data.getDiscourseById, user.walletAddress) &&
+                                        getStateTS(data.getDiscourseById) === 3 && canClaimC(data.getDiscourseById,walletAddress) && !hasWithdrawn(data.getDiscourseById, walletAddress) &&
                                         <FundClaimCardC data={data.getDiscourseById} />
                                     }
 
@@ -248,12 +242,12 @@ const DiscoursePage = () => {
                                     {/* Speaker message */}
                                     { !fundingDone(data.getDiscourseById) &&<>
                                     {
-                                        user.isLoggedIn && user.tConnected && isSpeaker(data, user.t_handle) && !speakerConfirmed(data, user.t_handle) &&
+                                        loggedIn && t_connected && isSpeaker(data, t_handle) && !speakerConfirmed(data, t_handle) &&
                                         !slotConfirmed(data) &&
                                         <SpeakerConfirmationCard data={data.getDiscourseById} />
                                     }
                                     {
-                                        user.isLoggedIn && user.tConnected && isSpeaker(data, user.t_handle) && speakerConfirmed(data, user.t_handle) &&
+                                        loggedIn && t_connected && isSpeaker(data, t_handle) && speakerConfirmed(data, t_handle) &&
                                         !slotConfirmed(data) &&
                                         <div className="bg-gradient rounded-xl p-4 flex flex-col">
                                             <div className="flex items-center gap-2">
@@ -267,7 +261,7 @@ const DiscoursePage = () => {
                                     }
                                     </>}
                                     {
-                                        user.isLoggedIn && !user.tConnected && getStateTS(data.getDiscourseById) === 0 &&
+                                        loggedIn && !t_connected && getStateTS(data.getDiscourseById) === 0 &&
                                         <div className="bg-card rounded-xl p-4 flex flex-col">
                                             <div className="flex items-center gap-2">
                                                 <TwitterIcon />
@@ -279,6 +273,15 @@ const DiscoursePage = () => {
                                                     <a className="text-[#1DA1F2]"> Click here to link</a>
                                                 </Link>
                                             </p>
+                                        </div>
+                                    }
+                                    {
+                                        
+                                        <div className="bg-card rounded-xl p-4 flex flex-col">
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-gradient font-Lexend font-bold text-sm">Test</p>
+                                            </div>
+                                            <button onClick={() => handleHi()} className="button-s text-xs">Mighty Button</button>
                                         </div>
                                     }
 
@@ -310,20 +313,20 @@ const DiscoursePage = () => {
                                             </div>
                                         </div>
 
-                                        {!user.isLoggedIn &&
+                                        {!loggedIn &&
                                             <ConnectWalletDailog open={openConnectWallet} setOpen={setOpenConnectWallet} />
                                         }
 
                                         {
-                                            user.isLoggedIn && !fundingDone(data.getDiscourseById) &&
+                                            loggedIn && !fundingDone(data.getDiscourseById) &&
                                             <FundDiscourseDialog open={openFund} setOpen={setOpenFund} discourse={data?.getDiscourseById} />
                                         }
 
-                                        {user.isLoggedIn && !fundingDone(data.getDiscourseById) && <button onClick={handleFund} className='button-s w-max px-6 text-sm font-medium mt-4'>
+                                        {loggedIn && !fundingDone(data.getDiscourseById) && <button onClick={handleFund} className='button-s w-max px-6 text-sm font-medium mt-4'>
                                             Fund 
                                         </button>}
                                         {
-                                            !user.isLoggedIn && !fundingDone(data.getDiscourseById) &&
+                                            !loggedIn && !fundingDone(data.getDiscourseById) &&
                                             <p className="text-yellow-200/70 text-[10px] font-medium bg-yellow-200/10 px-2 rounded-md mt-2 py-1">You need to connect wallet to fund or participate.</p>
                                         }
                                     </div>
@@ -342,7 +345,7 @@ const DiscoursePage = () => {
 
                                         {
                                             data.getDiscourseById.funds.length !== 0 &&
-                                            <FundsDialog open={openViewFunds} setOpen={setOpenViewFunds} funds={data.getDiscourseById.funds} />
+                                            <FundsDialog chainId={data.getDiscourseById.chainId} open={openViewFunds} setOpen={setOpenViewFunds} funds={data.getDiscourseById.funds} />
                                         }
 
                                         {/* list */}
@@ -361,7 +364,7 @@ const DiscoursePage = () => {
                                                                 <p className='text-white/60 text-xs'>{shortAddress(item.address)}</p>
                                                             </div>
                                                             <div className="flex items-center justify-between">
-                                                                <p className="text-gradient text-sm font-bold">{getFund(item.amount)} MATIC</p>
+                                                                <p className="text-gradient text-sm font-bold">{getFund(item.amount)} {getCurrencyName(data.getDiscourseById.chainId)}</p>
                                                                 <p className="text-white/40 text-[10px] ">{getAgoT(item.timestamp)}</p>
                                                             </div>
                                                         </div>

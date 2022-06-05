@@ -1,11 +1,9 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { Dispatch, SetStateAction, useRef } from "react";
+import { Dispatch, SetStateAction, useContext, useRef } from "react";
 import { useRouter } from 'next/router';
 import Web3 from "web3";
 import { BigNumber, ethers } from "ethers";
 import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store';
 import { useLazyQuery, useMutation, gql } from '@apollo/client';
 import UseAnimations from 'react-useanimations';
 import loading from 'react-useanimations/lib/loading';
@@ -14,14 +12,19 @@ import DiscourseHub from '../../web3/abi/DiscourseHub.json';
 import { CREATE_DISCOURSE } from '../../lib/mutations';
 import { getSecNow } from '../../helper/TimeHelper';
 import { GET_DISCOURSES } from '../../lib/queries';
-import { chain, useContractRead, useContractWrite, useWaitForTransaction } from 'wagmi';
+import { chain, useContractRead, useContractWrite, useNetwork, useWaitForTransaction } from 'wagmi';
 import { contractData } from '../../helper/ContractHelper';
 import { TransactionReceipt } from '@ethersproject/abstract-provider';
+import AppContext from '../utils/AppContext';
+import { getCurrencyName, supportedChainIds } from '../../Constants';
+import { ToastTypes } from '../../lib/Types';
+import { uuid } from 'uuidv4';
 
 
 
 const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen: Dispatch<SetStateAction<boolean>>, data: any }) => {
     let buttonRef = useRef(null);
+    const { loggedIn, walletAddress, addToast } = useContext(AppContext);
 
     const [minting, setMinting] = useState(false);
     const [txn, setTxn] = useState("");
@@ -29,17 +32,13 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
     const [error, setError] = useState({});
     const [amount, setAmount] = useState('0.01');
     const [discourseId, setDiscourseId] = useState('');
+    const { activeChain } = useNetwork();
 
     const route = useRouter();
-    const user = useSelector((state: RootState) => state.user);
+
     const abi = DiscourseHub;
     const [refetch] = useLazyQuery(GET_DISCOURSES);
     const [createDiscourse, { data: cData }] = useMutation(CREATE_DISCOURSE, {
-        context: {
-            headers: {
-                authorization: `Bearer ${user.token}`
-            }
-        },
         onCompleted: (data) => {
             refetch();
         }
@@ -58,10 +57,8 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
 
     // console.log(BigNumber.from(txData).toString());
 
-    const { data: tCount, refetch: getCount } = useContractRead({
-        addressOrName: '0x4459B1562493Dd44346C86615d87Bf9376f130ae',
-        contractInterface: abi
-    },
+    const { refetch: getCount } = useContractRead(
+        contractData(activeChain?.id!),
         'getTotalProposals',
         {
             enabled: false
@@ -69,7 +66,7 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
     )
 
     const fund = useContractWrite(
-        contractData(),
+        contractData(activeChain?.id!),
         'createProposalNoAddresses',
         {
             args: [
@@ -79,12 +76,26 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
                 +data?.charityPercent,
                 +data?.fundingPeriod
             ],
-            overrides: { from: user.walletAddress, value: ethers.utils.parseEther(amount) },
+            overrides: { from: walletAddress, value: ethers.utils.parseEther(amount) },
             onSettled: (txn) => {
                 console.log('submitted:', txn);
+                addToast({
+                    title: "Transaction Submitted",
+                    body: `Waiting for transaction to be mined. Hash: ${txn?.hash}`,
+                    type: ToastTypes.wait,
+                    duration: 5000,
+                    id: uuid()
+                })
             },
             onError: (error) => {
                 console.log('error:', error);
+                addToast({
+                    title: "Error Occured",
+                    body: error.message,
+                    type: ToastTypes.error,
+                    duration: 5000,
+                    id: uuid()
+                })
                 setMinting(false);
             }
         }
@@ -114,10 +125,11 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
                     discourseInput: {
                         speakers: data.speakers,
                         propId: count,
+                        chainId: activeChain?.id,
                         description: data.description,
                         title: data.title,
                         prop_description: data.title,
-                        prop_starter: user.walletAddress,
+                        prop_starter: walletAddress,
                         charityPercent: +data.charityPercent,
                         initTS: getSecNow(),
                         endTS: getEndTS(data.fundingPeriod) + "",
@@ -126,16 +138,18 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
                         txnHash: txnD.transactionHash
                     }
                 },
-                context: {
-                    headers: {
-                        authorization: `Bearer ${user.token}`
-                    }
-                },
                 onError: (error) => {
                     console.log(error);
                     setError({
                         message: "Error in registering discourse. Please contact admin",
                         error: true
+                    })
+                    addToast({
+                        title: "Error Occured",
+                        body: "Error in registering discourse. Please contact admin",
+                        type: ToastTypes.error,
+                        duration: 6000,
+                        id: uuid()
                     })
                     setMinting(false);
                 },
@@ -150,8 +164,26 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
 
 
     const handleFundClick = async () => {
-        setMinting(true);
-        fund.write();
+
+        if (supportedChainIds.includes(activeChain?.id!)) {
+            addToast({
+                title: "Waiting for confirmation",
+                body: `Please approve the transaction on your wallet. It may take a few minutes to complete.`,
+                type: ToastTypes.wait,
+                duration: 5000,
+                id: uuid()
+            })
+            setMinting(true);
+            fund.write();
+        } else {
+            addToast({
+                title: "Unsupported Chain",
+                body: "This chain is not supported. Please use a supported chain.",
+                type: ToastTypes.error,
+                duration: 5000,
+                id: uuid()
+            })
+        }
     }
 
     return (
@@ -161,7 +193,7 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
             <div className="flex items-center justify-center h-screen backdrop-blur-sm overflow-hidden">
                 <Dialog.Overlay className="fixed inset-0 bg-black opacity-0 w-screen h-screen overflow-hidden" />
 
-                <div className="relative bg-[#141515] border border-[#212427]  rounded-2xl max-w-sm w-full mx-auto px-6 py-4 sm:py-10 gap-4">
+                <div className={`${open ? 'animate-dEnter': 'animate-dExit'} relative bg-[#141515] border border-[#212427]  rounded-2xl max-w-sm w-full mx-auto px-6 py-4 sm:py-10 gap-4`}>
                     {/* Mint Post View */}
                     {!minting && !funded && <>
                         <Dialog.Title className="text-white text-base  font-bold tracking-wide flex items-center gap-2 w-max self-center mx-auto ">
@@ -170,7 +202,7 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
                             Fund Discourse
                         </Dialog.Title>
                         <Dialog.Description className="flex flex-col  w-full items-center  gap-4 text-center justify-between mt-4">
-                            <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>This is initial funding of the discourse required from creator. Need to fund min 0.01 MATIC</p>
+                            <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>This is initial funding of the discourse required from creator. Need to fund min 0.01 {getCurrencyName(activeChain?.id!)}</p>
                             <div className='flex flex-col items-center justify-center w-full gap-4'>
                                 <label htmlFor="amount" className='relative flex items-center'>
                                     <p className='absolute text-white m-auto inset-y-0 left-3 h-max'></p>
@@ -189,7 +221,7 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
                                 Creating Discourse
                             </Dialog.Title>
                             <Dialog.Description className="flex flex-col  w-full items-center  gap-4 text-center justify-between mt-4">
-                                <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>Approve the transaction from metamask.<br /> {amount} MATIC will be funded to the discourse.</p>
+                                <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>Approve the transaction from metamask.<br /> {amount} {getCurrencyName(activeChain?.id!)} will be funded to the discourse.</p>
                                 <div className='flex items-center justify-center gap-2'>
                                     <UseAnimations animation={loading} size={20} strokeColor="#ffffff" className='text-white' />
                                     <p className='text-sm text-white/50' >Please Wait...</p>

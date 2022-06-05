@@ -1,33 +1,31 @@
 import { Clock, Verify } from "iconsax-react";
 import { formatDate, getTimeFromDate, isDisputable, isFuture, isPast } from "../../../helper/TimeHelper";
 import { ArrowGRightIcon, ArrowRightIcon, HappeningIconGreen } from "../../utils/SvgHub";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../../store";
 import { GET_DISCOURSE_BY_ID, GET_TOKEN_BY_ID } from "../../../lib/queries";
-import { useEffect, useState } from "react";
-import { setMeet } from "../../../store/slices/meetSlice";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { discouresEnded } from "../../../helper/DataHelper";
 import DiscourseHub from '../../../web3/abi/DiscourseHub.json';
 import Addresses from '../../../web3/addresses.json';
-import Web3 from "web3";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { ENTER_DISCOURSE, RAISE_DISPUTE } from "../../../lib/mutations";
-import { useContractWrite, useWaitForTransaction } from "wagmi";
+import { useContractWrite, useNetwork, useWaitForTransaction } from "wagmi";
 import { contractData } from "../../../helper/ContractHelper";
-
-const getDiscourseContract = async () => {
-    return await new (window as any).web3.eth.Contract(
-        DiscourseHub,
-        Addresses.discourse_daimond
-    )
-}
+import AppContext from "../../utils/AppContext";
+import Cookies from "js-cookie";
+import { uuid } from "uuidv4";
+import { getChainName } from "../../../Constants";
+import { ToastTypes } from "../../../lib/Types";
 
 const JoinMeetCard = ({ data }: { data: any }) => {
-    const dispatch = useDispatch();
     const route = useRouter();
 
+    const [token, setToken] = useState("");
+
+    const { addToast, loggedIn, walletAddress, setMPropId, setMTimeStamp, timeStamp, propId } = useContext(AppContext);
+
     const [loading, setLoading] = useState(false);
+    const { activeChain } = useNetwork();
 
     var d = data.discourse
     const isMeetHappening = () => {
@@ -37,27 +35,15 @@ const JoinMeetCard = ({ data }: { data: any }) => {
         return false;
     }
 
-    const loadWeb3 = async () => {
-        const win = window as any;
-        if (win.ethereum) {
-            win.web3 = new Web3(win.ethereum);
-            await win.ethereum.enable();
-            (window as any).contract = await getDiscourseContract();
-        } else {
-            // Show metamask error
-        }
-    }
-
-    const user = useSelector((state: RootState) => state.user);
-    const meet = useSelector((state: RootState) => state.meet);
 
     const [getMeetToken, { data: tokenData, loading: tLoading, error: tError }] = useLazyQuery(GET_TOKEN_BY_ID, {
         variables: {
             id: data.id
         },
-        context: {
-            headers: {
-                authorization: `Bearer ${user.token}`
+        onCompleted: (data) => {
+            if (data) {
+                const token = Cookies.get('meetToken') + "";
+                setToken(token);
             }
         }
     })
@@ -70,12 +56,8 @@ const JoinMeetCard = ({ data }: { data: any }) => {
 
     const [enterMeet] = useMutation(ENTER_DISCOURSE, {
         variables: {
-            propId: data.propId
-        },
-        context: {
-            headers: {
-                authorization: `Bearer ${user.token}`
-            }
+            propId: data.propId,
+            chainId: data.chainId
         },
         onCompleted: () => {
             refetch();
@@ -85,29 +67,32 @@ const JoinMeetCard = ({ data }: { data: any }) => {
 
     const [raiseD] = useMutation(RAISE_DISPUTE, {
         variables: {
-            propId: data.propId
-        },
-        context: {
-            headers: {
-                authorization: `Bearer ${user.token}`
-            }
+            propId: data.propId,
+            chainId: data.chainId
         },
         onCompleted: () => {
             refetch();
+            addToast({
+                title: "Vote Submitted",
+                body: `You've disputed this discourse. Once the quorum reached the majority, the dispute will be resolved.`,
+                type: ToastTypes.success,
+                duration: 5000,
+                id: uuid()
+            })
         }
     })
 
 
 
     const speakerEntered = () => {
-        if (data.discourse.confirmation[0] === user.walletAddress || data.discourse.confirmation[1] === user.walletAddress) {
+        if (data.discourse.confirmation[0] === walletAddress || data.discourse.confirmation[1] === walletAddress) {
             return true;
         }
         return false;
     }
 
     const userIsSpeaker = () => {
-        if (data.speakers[0].address === user.walletAddress || data.speakers[1].address === user.walletAddress) {
+        if (data.speakers[0].address === walletAddress || data.speakers[1].address === walletAddress) {
             return true;
         }
         return false;
@@ -116,7 +101,7 @@ const JoinMeetCard = ({ data }: { data: any }) => {
     const handleJoinMeet = () => {
         setLoading(true);
         if (!userIsSpeaker()) {
-            if (meet.token !== "" && !isPast(meet.timeStamp) && meet.propId === data.propID) {
+            if (token !== "" && !isPast(timeStamp) && propId === data.propID) {
                 route.push("/live/" + data.id)
                 setLoading(false);
             } else {
@@ -133,7 +118,7 @@ const JoinMeetCard = ({ data }: { data: any }) => {
 
     const joinMeet = () => {
         if (!tLoading) {
-            if (meet.token !== "" && !isPast(meet.timeStamp) && meet.propId === data.propID) {
+            if (token !== "" && !isPast(timeStamp) && propId === data.propID) {
                 route.push("/live/" + data.id)
                 setLoading(false);
             } else {
@@ -143,16 +128,30 @@ const JoinMeetCard = ({ data }: { data: any }) => {
     }
 
     const enterD = useContractWrite(
-        contractData(),
+        contractData(activeChain?.id!),
         'enterDiscourse',
         {
             args: [data.propId],
-            overrides: { from: user.walletAddress },
+            overrides: { from: walletAddress },
             onSettled: (txn) => {
                 console.log('submitted:', txn);
+                addToast({
+                    title: "Transaction Submitted",
+                    body: `Waiting for transaction to be mined. Hash: ${txn?.hash}`,
+                    type: ToastTypes.wait,
+                    duration: 5000,
+                    id: uuid()
+                })
             },
             onError: (error) => {
                 console.log('error:', error);
+                addToast({
+                    title: "Error Occured",
+                    body: error.message,
+                    type: ToastTypes.error,
+                    duration: 5000,
+                    id: uuid()
+                })
                 setLoading(false);
             }
             
@@ -163,17 +162,24 @@ const JoinMeetCard = ({ data }: { data: any }) => {
         hash: enterD.data?.hash,
         onSettled: (txn) => {
             console.log('settled:', txn);
+            addToast({
+                title: "Transaction Settled",
+                body: `Your attendance has been confirmed for this discourse. You'll be redirected to the meeting in a moment.`,
+                type: ToastTypes.success,
+                duration: 5000,
+                id: uuid()
+            })
             enterMeet();
         }
     })
 
     
     const raiseDis = useContractWrite(
-        contractData(),
+        contractData(activeChain?.id!),
         'raiseDispute',
         {
             args: [data.propId],
-            overrides: { from: user.walletAddress },
+            overrides: { from: walletAddress },
             onSettled: (txn) => {
                 console.log('submitted:', txn);
             },
@@ -192,21 +198,38 @@ const JoinMeetCard = ({ data }: { data: any }) => {
     })
     
     const enterDiscourse = async () => {
-        enterD.write();
+        if (activeChain?.id === data.chainId) {
+            enterD.write();
+        } else {
+            addToast({
+                title: "Different Chain",
+                body: `This discourse is on [${getChainName(data.chainId)}]. Please use the correct chain.`,
+                type: ToastTypes.error,
+                duration: 5000,
+                id: uuid()
+            })
+        }
     }
     const raiseDispute = async () => {
-        raiseDis.write();
+        if (activeChain?.id === data.chainId) {
+            raiseDis.write();
+        } else {
+            addToast({
+                title: "Different Chain",
+                body: `This discourse is on [${getChainName(data.chainId)}]. Please use the correct chain.`,
+                type: ToastTypes.error,
+                duration: 5000,
+                id: uuid()
+            })
+        }
     }
 
 
     useEffect(() => {
         if (tokenData) {
-            dispatch(setMeet({
-                propId: data.propId,
-                dId: data.id,
-                token: tokenData.getMeetToken.token,
-                timeStamp: tokenData.getMeetToken.eat
-            }))
+            setToken(Cookies.get('meetToken')? Cookies.get('meetToken') : tokenData.getMeetToken.token);
+            setMPropId(data.propId);
+            setMTimeStamp(tokenData.getMeetToken.eat);
             setLoading(false);
             route.push("/live/" + data.id)
         }
@@ -225,12 +248,12 @@ const JoinMeetCard = ({ data }: { data: any }) => {
                     <p className="text-[#c6c6c6] text-[10px]">
                         Discourse started at <b>{formatDate(new Date(d.meet_date))}</b> • <b>{getTimeFromDate(new Date(d.meet_date))}</b>
                     </p>
-                    {user.isLoggedIn && <button onClick={handleJoinMeet} className="button-s flex items-center gap-2 w-max bg-gradient-g">
+                    {loggedIn && <button onClick={handleJoinMeet} className="button-s flex items-center gap-2 w-max bg-gradient-g">
                         <p className="text-gradient-g text-sm font-Lexend text-[#212427] font-medium">{loading ? 'wait..' : "join"}</p>
                         {!loading && <ArrowRightIcon />}
                     </button>}
                     {
-                        !user.isLoggedIn &&
+                        !loggedIn &&
                         <p className="text-yellow-200/70 text-[10px] font-medium bg-yellow-200/10 px-2 rounded-md mt-2 py-1">Connect your wallet to join the discourse.</p>
                     }
                 </div>

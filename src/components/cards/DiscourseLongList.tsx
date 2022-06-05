@@ -1,8 +1,10 @@
 import { Wallet1, Clock, Sound, MessageRemove, Calendar1, Verify, Warning2 } from "iconsax-react";
 import { useRouter } from "next/router";
+import { getCurrencyName } from "../../Constants";
 import { getMeetDateTS, getStateTS } from "../../helper/DataHelper";
 import { getFundTotal } from "../../helper/FundHelper";
 import { getTime, formatDate, getState, getTimeFromDate } from "../../helper/TimeHelper";
+import ChainTag, { SChainTag } from "../utils/ChainTag";
 
 const DiscourseLongList = ({ state, data }: { state: number, data: any }) => {
     const route = useRouter();
@@ -34,9 +36,12 @@ const DiscourseLongList = ({ state, data }: { state: number, data: any }) => {
                 {/* divider */}
                 <div className='w-[2px] mx-1 h-8 bg-[#212427] hidden sm:flex rounded-xl' />
                 {/* title */}
-                <div className='flex flex-col flex-[0.7]'>
+                <div className='flex flex-col flex-[0.7] gap-1'>
                     <h3 className='text-white text-sm font-semibold'>{data.title}</h3>
-                    <p className='text-[#68D391] font-bold text-xs'>{getFundTotal(data.funds)} MATIC</p>
+                    <div className="flex items-center gap-4">
+                        <SChainTag chainId={data.chainId} />
+                        <p className='text-[#68D391] font-bold text-xs'>{getFundTotal(data.funds)} {getCurrencyName(data.chainId)}</p>
+                    </div>
                 </div>
             </div>
 

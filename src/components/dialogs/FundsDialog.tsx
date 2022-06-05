@@ -1,10 +1,11 @@
 import { Dialog } from '@headlessui/react';
 import { Dispatch, SetStateAction, useRef } from "react";
+import { getCurrencyName } from '../../Constants';
 import { getFund } from '../../helper/FundHelper';
 import { shortAddress } from '../../helper/StringHelper';
 import { getAgoT } from '../../helper/TimeHelper';
 
-const FundsDialog = ({ open, setOpen, funds }: { open: boolean, setOpen: Dispatch<SetStateAction<boolean>>, funds: Array<any> }) => {
+const FundsDialog = ({ open, setOpen, funds, chainId }: { open: boolean, setOpen: Dispatch<SetStateAction<boolean>>, funds: Array<any>, chainId: number }) => {
     let buttonRef = useRef(null);
 
     const handleClose = () => {
@@ -17,7 +18,7 @@ const FundsDialog = ({ open, setOpen, funds }: { open: boolean, setOpen: Dispatc
             <div className="flex items-center justify-center h-screen backdrop-blur-sm overflow-hidden">
                 <Dialog.Overlay className="fixed inset-0 bg-black opacity-0 w-screen h-screen overflow-hidden" />
 
-                <div className="relative bg-[#141515] border border-[#212427] max-h-[60vh]  rounded-2xl max-w-sm w-full mx-auto py-4 sm:py-6 gap-4 overflow-hidden">
+                <div className={`${open ? 'animate-dEnter': 'animate-dExit'} relative bg-[#141515] border border-[#212427] max-h-[60vh]  rounded-2xl max-w-sm w-full mx-auto py-4 sm:py-6 gap-4 overflow-hidden`}>
                     {/* Mint Post View */}
                     {<>
                         <Dialog.Title className="text-white text-base  font-bold tracking-wide flex items-center gap-2 w-max px-6">
@@ -38,7 +39,7 @@ const FundsDialog = ({ open, setOpen, funds }: { open: boolean, setOpen: Dispatc
                                                 <p className='text-white/60 text-xs'>{shortAddress(item.address)}</p>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <p className="text-gradient text-sm font-bold">{getFund(item.amount)} MATIC</p>
+                                                <p className="text-gradient text-sm font-bold">{getFund(item.amount)} {getCurrencyName(chainId)}</p>
                                                 <p className="text-white/40 text-[10px] ">{getAgoT(item.timestamp)}</p>
                                             </div>
                                         </div>

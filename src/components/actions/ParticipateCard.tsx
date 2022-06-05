@@ -1,23 +1,16 @@
 import { ParticipatedIcon, ParticipateIcon, RightArrowGradient } from "../utils/SvgHub";
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store";
+import { useContext, useState } from "react";
 import { validateEmail } from "../../helper/StringHelper";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { PARTICIPATE } from "../../lib/mutations";
 import { GET_DISCOURSE_BY_ID } from "../../lib/queries";
+import AppContext from "../utils/AppContext";
 
 const ParticipateCard = ({ data }: {data : any}) => {
     const [ email, setEmail ] = useState('');
-    const user = useSelector((state: RootState) => state.user);
+    const { loggedIn, walletAddress } = useContext(AppContext);
 
-    const [participate, { data: participateData, loading: participateLoading, error: participateError }] = useMutation(PARTICIPATE, {
-        context: {
-            headers: {
-                authorization: `Bearer ${user.token}`
-            }
-        }
-    });
+    const [participate, { data: participateData, loading: participateLoading, error: participateError }] = useMutation(PARTICIPATE);
 
     const [ refetch ] = useLazyQuery(GET_DISCOURSE_BY_ID, {
         variables: {
@@ -27,15 +20,15 @@ const ParticipateCard = ({ data }: {data : any}) => {
 
     const isParticipant = (data: any) => {
 
-        if (data && user.walletAddress) {
-            return data.participants.some((participant: any) => participant.address === user.walletAddress);
+        if (data && walletAddress) {
+            return data.participants.some((participant: any) => participant.address === walletAddress);
         }
         return false;
     }
 
     const getParticipatedEmail = (data: any) => {
-        if (data && user.walletAddress) {
-            return data.participants.find((participant: any) => participant.address === user.walletAddress).email;
+        if (data && walletAddress) {
+            return data.participants.find((participant: any) => participant.address === walletAddress).email;
         }
         return "";
     }
@@ -43,14 +36,9 @@ const ParticipateCard = ({ data }: {data : any}) => {
     const [ edit, setEdit ] = useState(false);
 
     const handleParticipate = () => {
-        if (user.isLoggedIn) {
+        if (loggedIn) {
             if (email !== "" && validateEmail(email)) {
                 participate({
-                    context: {
-                        headers: {
-                            authorization: `Bearer ${user.token}`
-                        }
-                    },
                     variables: {
                         id: data.id,
                         email: email

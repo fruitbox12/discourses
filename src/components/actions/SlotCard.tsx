@@ -1,9 +1,7 @@
 import { Calendar1, CalendarTick, Clock } from "iconsax-react";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { getOtherSpeaker, getSlotProposer, getSlotString, slotConfirmed } from "../../helper/DataHelper";
 import { SlotCalendarIcon, SlotItemIcon } from "../utils/SvgHub";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store";
 import DatePicker from '../actions/DatePickerButton';
 import DatePickerDialog from "../dialogs/DatePickerDialog";
 import TimePickerDialog from "../dialogs/TimePickerDialog";
@@ -11,8 +9,9 @@ import { formatDate, getEndDate, getTimeFromDate } from "../../helper/TimeHelper
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { ACCEPT_SLOT, PROPOSE_SLOT } from "../../lib/mutations";
 import { GET_DISCOURSE_BY_ID } from "../../lib/queries";
+import AppContext from "../utils/AppContext";
 
-const SlotCard = ({endTS, data, propId, id } : {endTS: number, data:any, propId: number, id: string}) => {
+const SlotCard = ({endTS, data, propId, chainId, id } : {endTS: number, data:any, propId: number, chainId: number, id: string}) => {
 
     const [ openDateDialog, setOpenDateDialog ] = useState(false);
     const [ openTimeDialog, setOpenTimeDialog ] = useState(false);
@@ -41,7 +40,7 @@ const SlotCard = ({endTS, data, propId, id } : {endTS: number, data:any, propId:
     const [selectedSlot, setSelectedSlot] = useState(-1);
     const [ sSlots, setSSlots ] = useState([]);
     const [ dates, setDates ] = useState([]);
-    const user = useSelector((state:RootState) => state.user);
+    const { loggedIn, walletAddress } = useContext(AppContext);
 
     const [ refetch ] = useLazyQuery(GET_DISCOURSE_BY_ID, {
         variables: {
@@ -49,22 +48,12 @@ const SlotCard = ({endTS, data, propId, id } : {endTS: number, data:any, propId:
         }
     });
     const [ proposeSlots ] = useMutation(PROPOSE_SLOT, {
-        context: {
-            headers: {
-                authorization: `Bearer ${user.token}`
-            }
-        },
         onCompleted: (data) => {
             refetch();
         }
     })
 
     const [ acceptSlot ] = useMutation(ACCEPT_SLOT, {
-        context: {
-            headers: {
-                authorization: `Bearer ${user.token}`
-            }
-        },
         onCompleted: (data) => {
             refetch();
         }
@@ -92,6 +81,7 @@ const SlotCard = ({endTS, data, propId, id } : {endTS: number, data:any, propId:
             variables: {
                 slotInput: {
                     propId: propId,
+                    chainId: chainId,
                     slots: slotsData
                 }
             }
@@ -117,6 +107,7 @@ const SlotCard = ({endTS, data, propId, id } : {endTS: number, data:any, propId:
         }
         let slotInput = {
             propId: propId,
+            chainId: chainId,
             slots: slots
         }
 
@@ -170,7 +161,7 @@ const SlotCard = ({endTS, data, propId, id } : {endTS: number, data:any, propId:
                     </button>}
                 </>}
 
-                { data.proposed && getSlotProposer(data) !== user.walletAddress && !slotConfirmed(data) && <>
+                { data.proposed && getSlotProposer(data) !== walletAddress && !slotConfirmed(data) && <>
                     <p className="text-[10px] text-[#c6c6c6]">
                         Pick any one slot to confirm the date and time before <span className="tracking-wide font-semibold">{formatDate(getEndDate(endTS))}</span>
                     </p>
@@ -189,7 +180,7 @@ const SlotCard = ({endTS, data, propId, id } : {endTS: number, data:any, propId:
                 </>}
 
                 {
-                    data.proposed && getSlotProposer(data) === user.walletAddress && !slotConfirmed(data) &&
+                    data.proposed && getSlotProposer(data) === walletAddress && !slotConfirmed(data) &&
                     <>
                         <p className="text-[10px] text-[#c6c6c6]">
                             Waiting for <span className="tracking-wide font-semibold">{}</span> other speaker to confirm the slot you recommended.
