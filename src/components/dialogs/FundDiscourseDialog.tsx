@@ -39,6 +39,13 @@ const FundDiscourseDialog = ({ open, setOpen, discourse }: { open: boolean, setO
             overrides: { from: walletAddress, value: ethers.utils.parseEther(amount) },
             onSettled: (txn) => {
                 console.log('submitted:', txn);
+                addToast({
+                    title: "Transaction Submitted",
+                    body: `Waiting for transaction to be mined. Hash: ${txn?.hash}`,
+                    type: ToastTypes.wait,
+                    duration: 5000,
+                    id: uuid()
+                })
             },
             onError: (error) => {
                 console.log('error:', error);
