@@ -275,7 +275,7 @@ const DiscoursePage = () => {
                                             </p>
                                         </div>
                                     }
-                                    {
+                                    {/* {
                                         
                                         <div className="bg-card rounded-xl p-4 flex flex-col">
                                             <div className="flex items-center gap-2">
@@ -283,7 +283,7 @@ const DiscoursePage = () => {
                                             </div>
                                             <button onClick={() => handleHi()} className="button-s text-xs">Mighty Button</button>
                                         </div>
-                                    }
+                                    } */}
 
                                     {/* Participation card
                                     {user.isLoggedIn && 
