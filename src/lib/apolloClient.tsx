@@ -5,7 +5,7 @@ import { setContext } from "@apollo/client/link/context";
 
 export default function createApolloClient() {
     const httpLink = new HttpLink({
-        uri: "https://agora-server-zj4ep.ondigitalocean.app/",
+        uri: "https://api.agorasquare.io/",
         // uri: "http://localhost/",
         credentials: 'include',
         // headers: {
