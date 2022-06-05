@@ -111,7 +111,7 @@ const LogoutPop = () => {
                             {
                                 !t_connected &&
                                 <Link href="/link" >
-                                    <a className="text-[10px] w-full flex items-center gap-2 button-t py-2 hover:bg-[#212427] text-[#1DA1F2] font-semibold"><Twitter_x10 /> Link Twitter</a>
+                                    <a className="text-[10px] w-full flex justify-center items-center gap-2 button-t py-2 hover:bg-[#212427] text-[#1DA1F2] font-semibold"><Twitter_x10 /> Link Twitter</a>
                                 </Link>
                             }
                             {
