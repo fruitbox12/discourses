@@ -3,7 +3,6 @@ const SEOHome = () => {
     return (
         <Head>
             <meta name="description" content="Crowdfund thought leaders to engage in dialogue to inform governance, deliberation, and knowledge discovery." />
-
             <meta property="og:url" content="https://discourses.agorasquare.io/" />
             <meta property="og:type" content="website" />
             <meta property="og:title" content="Discourses by Agora Square" />

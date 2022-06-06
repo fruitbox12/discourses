@@ -93,8 +93,8 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
       <ApolloProvider client={apolloClient}>
         <SessionProvider session={session}>
           <HMSRoomProvider>
+            <SEOHome />
             <ContextWrapper>
-              <SEOHome />
               <Component {...pageProps} />
             </ContextWrapper>
           </HMSRoomProvider>
