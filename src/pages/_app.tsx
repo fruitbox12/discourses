@@ -17,6 +17,7 @@ import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import SEOHome from '../components/utils/SEOHome'
 import ContextWrapper from '../components/utils/ContextWrapper'
+import { rpcUrl } from '../Constants'
 
 
 const auroraChain: Chain = {
@@ -45,13 +46,12 @@ const auroraChain: Chain = {
 }
 
 const { provider, chains } = configureChains(
-  [chain.polygonMumbai, auroraChain],
+  [chain.polygonMumbai, auroraChain, chain.rinkeby],
   [
     alchemyProvider({ alchemyId: 'ksqleRX25aRSLQ9uawfAwVTlQ8gKLULj' }),
     jsonRpcProvider({
       rpc: (chain) => {
-        if (chain.id !== auroraChain.id) return null
-        return { http: chain.rpcUrls.default }
+        return rpcUrl(chain.id)
       }
     })
   ]

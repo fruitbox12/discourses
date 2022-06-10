@@ -34,7 +34,7 @@ const ContextWrapper: FC<Props> = ({ children }) => {
         if (route.asPath.includes('/create')) {
             handleAddToast({
                 title: "Choose Chain",
-                body: "Discourses supports 'Polygon' & 'Aurora' chain. Creating a discourse will automatically create a proposal on the selected chain. If you want to create a proposal on a different chain, please change the chain in your connected wallet.",
+                body: "Discourses supports 'Polygon', 'Aurora' & 'Rinkeby' chain. Creating a discourse will automatically create a proposal on the selected chain. If you want to create a proposal on a different chain, please change from top right menu.",
                 type: ToastTypes.info,
                 id: uuid(),
                 duration: 20000
@@ -191,7 +191,7 @@ const ContextWrapper: FC<Props> = ({ children }) => {
 
     return (
         <AppContext.Provider value={injectedContext}>
-            <div className="fixed pointer-events-none z-40 max-w-xs flex flex-col-reverse h-full items-end inset-y-0 my-auto w-full right-0 p-6 gap-4 t-all">
+            <div className="fixed pointer-events-none z-40 max-w-xs flex flex-col-reverse sm:flex-col h-full items-end inset-y-0 my-auto w-full right-0 p-6 gap-4 t-all">
                 {
                     toasts.map(t => (
                         <ToastCard data={t} key={t.id} close={removeToast} />

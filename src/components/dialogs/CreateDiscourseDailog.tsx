@@ -240,7 +240,7 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
                             <Dialog.Description className="flex flex-col  w-full items-center  gap-4 text-center justify-between mt-4">
                                 <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>Discourse created! Click Discourse button below to go to the discourse page.</p>
                                 <div className='flex items-center justify-center w-full gap-10'>
-                                    <a href={`${chain.polygonMumbai.blockExplorers?.default.url}/tx/${txn}`} target="_blank" className='text-xs text-green-300  ' rel="noreferrer" >Transaction ↗</a>
+                                    <a href={`${activeChain?.blockExplorers?.default.url}/tx/${txn}`} target="_blank" className='text-xs text-green-300  ' rel="noreferrer" >Transaction ↗</a>
                                     {discourseId !== "" && <button onClick={() => route.push(`/${discourseId}`)} className='text-xs font-bold  text-gradient' >Discourse &rarr;</button>}
                                 </div>
                             </Dialog.Description>

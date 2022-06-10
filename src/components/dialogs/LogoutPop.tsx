@@ -2,24 +2,27 @@ import { Popover, Transition } from "@headlessui/react";
 import { Wallet1, ArrowRight2, Logout, Refresh, I3DRotate, Repeat } from "iconsax-react";
 import Cookies from "js-cookie";
 import Link from "next/link";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { uuid } from "uuidv4";
 import { useBalance, useDisconnect, useFeeData, useNetwork } from "wagmi";
 import { getSwitchNetwork, supportedChainIds } from "../../Constants";
 import { shortAddress } from "../../helper/StringHelper";
 import { ToastTypes } from "../../lib/Types";
+import ChainBar from "../actions/ChainBar";
 import AppContext from "../utils/AppContext";
 import ChainTag, { ChainIcon, IChainTag, SChainTag } from "../utils/ChainTag";
-import { Twitter_x10 } from "../utils/SvgHub";
+import { Twitter_x10, Twitter_x16 } from "../utils/SvgHub";
 
 const LogoutPop = () => {
     const { disconnectAsync } = useDisconnect();
     const { t_connected, walletAddress, t_handle, addToast } = useContext(AppContext);
     const { refresh } = useContext(AppContext);
-    const { activeChain, switchNetworkAsync } = useNetwork();
+    const { activeChain } = useNetwork();
     const [switching, setSwitching] = useState(false);
     const bal = useBalance({
-        addressOrName: walletAddress
+        addressOrName: walletAddress,
+        chainId: activeChain?.id,
+        watch: true
     });
 
     const handleLogout = async () => {
@@ -30,36 +33,15 @@ const LogoutPop = () => {
             console.log(err);
         })
     }
-
-    const handleSwitchNetwork = () => {
-        setSwitching(true);
-        addToast({
-            title: "Waiting for confirmation",
-            body: 'Please approve from your wallet.',
-            type: ToastTypes.wait,
-            id: uuid(),
-            duration: 5000
-        })
-        switchNetworkAsync?.(getSwitchNetwork(activeChain?.id!)).then(() => {
-            setSwitching(false);
-        }).catch(err => {
-            console.log(err);
-            setSwitching(false);
-
-            addToast({
-                title: "Error Switching Network",
-                body: err.message,
-                type: ToastTypes.error,
-                id: uuid(),
-                duration: 5000
-            })
-        })
-    }
+    
 
     const getBalance = () => {
         if (bal && activeChain && supportedChainIds.includes(activeChain?.id)) {
             let val = Number(bal.data?.formatted);
             if (bal.data?.symbol === "ETH") {
+                return val > 999999 ? 999999 + "+" : val.toFixed(3) + " " + bal.data?.symbol;
+            }
+            if (bal.data?.symbol === "rETH") {
                 return val > 999999 ? 999999 + "+" : val.toFixed(3) + " " + bal.data?.symbol;
             }
 
@@ -101,26 +83,33 @@ const LogoutPop = () => {
                     <Popover.Panel className={` ${open ? 'animate-dEnter' : 'animate-dExit'} shadow-2xl absolute z-20 right-0 mt-1 bg-card bg-[#141515] p-2 rounded-xl backdrop-blur-lg max-w-xs w-max`}>
                         <div className="flex flex-col">
                             <div className="flex px-4 py-2  items-center justify-between gap-1">
-                                <IChainTag chainId={activeChain?.id!} />
+                                {/* <IChainTag chainId={activeChain?.id!} />
                                 <button onClick={() => handleSwitchNetwork()} className="button-i flex items-center gap-[4px] px-2">
                                     {!switching && <Repeat size={10} color="#c6c6c6" />}
                                     <p className="text-[10px] text-[#c6c6c6]">{switching ? 'Switching..' : 'Switch'}</p>
-                                </button>
+                                </button> */}
+                                <ChainBar />
                             </div>
                             {/* <div className="flex px-4 py-2 "> */}
                             {
                                 !t_connected &&
                                 <Link href="/link" >
-                                    <a className="text-[10px] w-full flex justify-center items-center gap-2 button-t py-2 hover:bg-[#212427] text-[#1DA1F2] font-semibold"><Twitter_x10 /> Link Twitter</a>
+                                    <a className={`w-full flex items-center mt-[2px] gap-2 button-t py-2 hover:bg-[#212427]`}>
+                                        <Twitter_x16 />
+                                        <p className="text-xs font-Lexend font-normal text-[#1DA1F2]">Link Twitter</p>
+                                    </a>
                                 </Link>
                             }
                             {
-                                t_connected && <p className="pointer-events-none text-[10px] px-4 py-2 w-full justify-center text-[#1DA1F2] font-semibold flex items-center gap-1"><Twitter_x10 /> @{t_handle}</p>
+                                t_connected && <div className="w-full flex items-center mt-[2px] gap-2 button-t py-2">
+                                    <Twitter_x16 />
+                                    <p className="text-xs font-Lexend font-normal text-[#1DA1F2]">@{t_handle}</p>
+                                </div>
                             }
                             {/* </div> */}
-                            <button onClick={() => handleLogout()} className={`w-full flex items-center justify-center mt-[2px] gap-2 button-t py-2 hover:bg-[#212427]`}>
+                            <button onClick={() => handleLogout()} className={`w-full flex items-center mt-[2px] gap-2 button-t py-2 hover:bg-[#212427]`}>
                                 <Logout size='16' color='#fc8181' />
-                                <p className="text-xs font-Lexend text-[#fc8181]">Log out</p>
+                                <p className="text-xs font-Lexend font-normal text-[#fc8181]">Log out</p>
                             </button>
                         </div>
                     </Popover.Panel>

@@ -189,7 +189,7 @@ const FundDiscourseDialog = ({ open, setOpen, discourse }: { open: boolean, setO
                             <Dialog.Description className="flex flex-col  w-full items-center  gap-4 text-center justify-between mt-4">
                                 <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>Thanks for funding the discourse. You&apos;ll get notification once the stream is scheduled and speakers confirms.</p>
                                 <div className='flex items-center justify-center w-full px-10 gap-10'>
-                                    <a href={`${chain.polygonMumbai.blockExplorers?.default.url}/tx/${txn}`} target="_blank" className='text-xs font-bold  text-gradient' rel="noreferrer" >View Transaction ↗</a>
+                                    <a href={`${activeChain?.blockExplorers?.default.url}/tx/${txn}`} target="_blank" className='text-xs font-bold  text-gradient' rel="noreferrer" >View Transaction ↗</a>
                                 </div>
                             </Dialog.Description>
                             </>
