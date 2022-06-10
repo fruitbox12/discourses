@@ -17,8 +17,14 @@ const WalletOptionsPopUp = () => {
 	const account = useAccount();
 
 	const { refetch } = useQuery(GET_USERDATA);
-    const [getNonce, { data: nonceData, loading: nonceLoading, error: nonceError }] = useLazyQuery(GET_NONCE);
-	const [verifySig, { data, loading: sigLoading, error: sigError }] = useMutation(VERIFY_SIG, {
+    const [getNonce] = useLazyQuery(GET_NONCE, {
+        onCompleted: (data) => {
+            if (data && !loggedIn) {
+                signAndVerify(data.getNonce.nonce);
+            }
+        }
+    });
+	const [verifySig] = useMutation(VERIFY_SIG, {
 		fetchPolicy: 'network-only',
 		onCompleted: (data) => {
 			if (data) {
@@ -27,15 +33,16 @@ const WalletOptionsPopUp = () => {
 		},
 		onError: (error) => {
 			console.log(error);
+            refresh();
 		}
 	});
 
-    useEffect(() => {
-		if (nonceData && !loggedIn) {
-			signAndVerify(nonceData.getNonce.nonce);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [nonceData])
+    // useEffect(() => {
+	// 	if (nonceData && !loggedIn) {
+	// 		signAndVerify(nonceData.getNonce.nonce);
+	// 	}
+	// 	// eslint-disable-next-line react-hooks/exhaustive-deps
+	// }, [nonceData])
 
 
 

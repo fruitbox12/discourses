@@ -84,6 +84,7 @@ const FundDiscourseDialog = ({ open, setOpen, discourse }: { open: boolean, setO
                 setMinting(false);
                 setFunded(true);
                 fetchD();
+                fund.reset();
             },
             onError: (error) => {
                 console.log(error);

@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { Dispatch, FC, ReactNode, useEffect, useState } from "react";
 import { uuid } from "uuidv4";
-import { useConnect } from "wagmi";
+import { useConnect, useDisconnect } from "wagmi";
 import { GET_USERDATA } from "../../lib/queries";
 import { Toast, ToastTypes } from "../../lib/Types";
 import ToastCard from "../cards/ToastCard";
@@ -26,7 +26,8 @@ const ContextWrapper: FC<Props> = ({ children }) => {
     const [timeStamp, setTimeStamp] = useState("");
     const [toasts, setToasts] = useState<Toast[]>([]);
 
-    const { activeConnector, status } = useConnect();
+    const { activeConnector, status, data: aData } = useConnect();
+    const { disconnectAsync } = useDisconnect();
 
     const route = useRouter();
     
@@ -111,17 +112,19 @@ const ContextWrapper: FC<Props> = ({ children }) => {
         {
             fetchPolicy: "network-only",
             onCompleted: (data) => {
-                if (data.getUserData) {
-                    setLoggedIn(true);
-                    setWalletAddress(data.getUserData.walletAddress);
-                } else {
-                    setLoggedIn(false);
-                    setWalletAddress(data.getUserData.walletAddress);
+                if (data) {
+                    if (data?.getUserData) {
+                        setLoggedIn(true);
+                        setWalletAddress(data.getUserData.walletAddress);
+                    } else {
+                        setLoggedIn(false);
+                        setWalletAddress(data.getUserData.walletAddress);
+                    }
+    
+                    setTimeout(() => {
+                        setLoading(false);
+                    }, 2000);
                 }
-
-                setTimeout(() => {
-                    setLoading(false);
-                }, 2000);
             },
             onError: (error) => {
                 setLoggedIn(false);
@@ -133,7 +136,6 @@ const ContextWrapper: FC<Props> = ({ children }) => {
             }
         }
     );
-
 
     const username = data?.getUserData?.username + "";
     const t_connected = data?.getUserData?.twitterConnected;

@@ -11,6 +11,7 @@ import { HMSRoomProvider } from '@100mslive/react-sdk';
 import { providers } from 'ethers';
 import { Chain, chain, configureChains, createClient, WagmiConfig } from 'wagmi';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { infuraProvider } from 'wagmi/providers/infura';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
@@ -49,6 +50,7 @@ const { provider, chains } = configureChains(
   [chain.polygonMumbai, auroraChain, chain.rinkeby],
   [
     alchemyProvider({ alchemyId: 'ksqleRX25aRSLQ9uawfAwVTlQ8gKLULj' }),
+    infuraProvider({ infuraId: 'a4d6ff8d0a7c4b93a9a4ac41adc048c8' }),
     jsonRpcProvider({
       rpc: (chain) => {
         return rpcUrl(chain.id)
