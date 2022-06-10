@@ -26,7 +26,7 @@ const ChainExplorer = ({data} : {data:any}) => {
     }
     if (data.chainId === 4) {
         return (
-            <button onClick={() => handleRinkebyScan()} className="flex items-center outline-none border-none bg-[#716B94]/20 rounded-lg px-2 py-1 ring-0 hover:ring-[1px] ring-[#78D64B]/50 transition-all">
+            <button onClick={() => handleRinkebyScan()} className="flex items-center outline-none border-none bg-[#716B94]/20 rounded-lg px-2 py-1 ring-0 hover:ring-[1px] ring-[#716B94]/50 transition-all">
                 <Ethereum16 />
                 <p className="text-[10px] font-medium text-[#716B94] font-Lexend ml-2 mr-1">Rinkeby</p>
                 <ArrowNE color="#716B94" />
