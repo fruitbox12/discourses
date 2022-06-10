@@ -1,6 +1,7 @@
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { Popover, Transition } from "@headlessui/react";
 import { ArrowRight2, BoxSearch, PathTool, Profile2User, Wallet1 } from "iconsax-react";
+import Cookies from "js-cookie";
 import { useContext, useEffect, useState } from "react";
 import { Connector, useAccount, useConnect, useSignMessage } from "wagmi";
 import { VERIFY_SIG } from "../../lib/mutations";
@@ -18,33 +19,27 @@ const WalletOptionsPopUp = () => {
 
 	const { refetch } = useQuery(GET_USERDATA);
     const [getNonce] = useLazyQuery(GET_NONCE, {
+        fetchPolicy: "no-cache",
         onCompleted: (data) => {
             if (data && !loggedIn) {
                 signAndVerify(data.getNonce.nonce);
             }
+
+            if (Cookies.get('jwt')) {
+                refresh();
+            }
         }
     });
 	const [verifySig] = useMutation(VERIFY_SIG, {
-		fetchPolicy: 'network-only',
+		fetchPolicy: 'no-cache',
 		onCompleted: (data) => {
-			if (data) {
-				refresh();
-			}
+            refresh();
 		},
 		onError: (error) => {
 			console.log(error);
             refresh();
 		}
 	});
-
-    // useEffect(() => {
-	// 	if (nonceData && !loggedIn) {
-	// 		signAndVerify(nonceData.getNonce.nonce);
-	// 	}
-	// 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	// }, [nonceData])
-
-
 
     const signAndVerify = async (nonce: string) => {
 		const sigData = await signNonce(nonce)
