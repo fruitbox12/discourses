@@ -119,7 +119,7 @@ const ContextWrapper: FC<Props> = ({ children }) => {
                 if (data) {
                     console.log('got data');
                     
-                    if (data?.getUserData) {
+                    if (data?.getUserData && status === "connected") {
                         console.log('got getUserData');
                         setLoggedIn(true);
                         setWalletAddress(data.getUserData.walletAddress);

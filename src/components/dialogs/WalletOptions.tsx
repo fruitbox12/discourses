@@ -2,6 +2,7 @@ import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { Popover, Transition } from "@headlessui/react";
 import { ArrowRight2, BoxSearch, PathTool, Profile2User, Wallet1 } from "iconsax-react";
 import Cookies from "js-cookie";
+import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { Connector, useAccount, useConnect, useSignMessage } from "wagmi";
 import { VERIFY_SIG } from "../../lib/mutations";
@@ -10,6 +11,8 @@ import AppContext from "../utils/AppContext";
 import { MetamaskIcon, NullWalletIcon, WalletConnectIcon } from "../utils/SvgHub";
 
 const WalletOptionsPopUp = () => {
+
+    const route = useRouter();
 
 	const { refresh, loggedIn } = useContext(AppContext);
     const { connectors, connectAsync, isConnecting, isConnected, data: wData } = useConnect();
@@ -24,16 +27,13 @@ const WalletOptionsPopUp = () => {
             if (data && !loggedIn) {
                 signAndVerify(data.getNonce.nonce);
             }
-
-            if (Cookies.get('jwt')) {
-                refresh();
-            }
         }
     });
 	const [verifySig] = useMutation(VERIFY_SIG, {
 		fetchPolicy: 'no-cache',
 		onCompleted: (data) => {
             refresh();
+            route.reload();
 		},
 		onError: (error) => {
 			console.log(error);
