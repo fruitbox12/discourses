@@ -110,8 +110,9 @@ const ContextWrapper: FC<Props> = ({ children }) => {
 
     const { data, loading: qLoading, error, refetch } = useQuery(GET_USERDATA,
         {
-            fetchPolicy: "no-cache",
-
+            fetchPolicy: "network-only",
+            nextFetchPolicy: 'network-only',
+            notifyOnNetworkStatusChange: true,
             onCompleted: (data) => {
                 console.log('completed req');
                 
