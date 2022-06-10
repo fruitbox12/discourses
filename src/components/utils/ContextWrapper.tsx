@@ -110,8 +110,11 @@ const ContextWrapper: FC<Props> = ({ children }) => {
 
     const { data, loading: qLoading, error, refetch } = useQuery(GET_USERDATA,
         {
-            fetchPolicy: "network-only",
+            fetchPolicy: "no-cache",
+
             onCompleted: (data) => {
+                console.log('completed req');
+                
                 if (data) {
                     console.log('got data');
                     
@@ -128,6 +131,8 @@ const ContextWrapper: FC<Props> = ({ children }) => {
                     setTimeout(() => {
                         setLoading(false);
                     }, 2000);
+                } else {
+                    console.log('data undefined');
                 }
             },
             onError: (error) => {
@@ -140,6 +145,12 @@ const ContextWrapper: FC<Props> = ({ children }) => {
             }
         }
     );
+
+    useEffect(() => {
+        if (data) {
+            console.log('data fetched');
+        }
+    }, [data])
 
     const username = data?.getUserData?.username + "";
     const t_connected = data?.getUserData?.twitterConnected;
