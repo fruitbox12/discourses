@@ -113,12 +113,16 @@ const ContextWrapper: FC<Props> = ({ children }) => {
             fetchPolicy: "network-only",
             onCompleted: (data) => {
                 if (data) {
+                    console.log('got data');
+                    
                     if (data?.getUserData) {
+                        console.log('got getUserData');
                         setLoggedIn(true);
                         setWalletAddress(data.getUserData.walletAddress);
                     } else {
+                        console.log('getUserData undefined');
                         setLoggedIn(false);
-                        setWalletAddress(data.getUserData.walletAddress);
+                        setWalletAddress("");
                     }
     
                     setTimeout(() => {
