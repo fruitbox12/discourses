@@ -1,7 +1,11 @@
 import { Dialog } from '@headlessui/react';
 import { CloseCircle, Video } from 'iconsax-react';
+import dynamic from 'next/dynamic';
 import { Dispatch, SetStateAction, useRef } from "react";
-import ReactHlsPlayer from 'react-hls-player';
+const ReactHlsPlayer = dynamic(
+    () => import('react-hls-player'),
+    {ssr: false}
+)
 
 const HLSPlayerDailog = ({ open, setOpen, data }: { open: boolean, setOpen: Dispatch<SetStateAction<boolean>>, data: any }) => {
     let buttonRef = useRef(null);
