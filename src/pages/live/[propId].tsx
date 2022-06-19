@@ -23,7 +23,7 @@ import { Microphone2, MicrophoneSlash, Video, VideoSlash } from "iconsax-react";
 import { shortAddress } from "../../helper/StringHelper";
 import { CalendarDoneIcon } from "../../components/utils/SvgHub";
 import Link from "next/link";
-import { END_MEET } from "../../lib/mutations";
+import { END_MEET, STOP_STREAM } from "../../lib/mutations";
 import AppContext from "../../components/utils/AppContext";
 import Cookies from "js-cookie";
 import BDecoration from "../../components/utils/BDecoration";
@@ -151,6 +151,15 @@ const LivePage = () => {
     }, [])
 
 
+    const [endMeet] = useMutation(STOP_STREAM, {
+        variables: {
+            id: dData?.id
+        },
+        onError: (error) => {
+            // nothing
+        }
+    })
+
     useEffect(() => {
         if (roomState === HMSRoomState.Connected) {
             setMeetingJoined(true);
@@ -161,6 +170,10 @@ const LivePage = () => {
                 setMeetEnded(true);
                 getDiscourse();
                 getDiscourses();
+            }
+
+            if (peers.length <= 1) {
+                endMeet();
             }
         }
     }, [roomState])

@@ -249,3 +249,15 @@ export const TEST = gql`
         test
     }
 `
+
+export const CHECK_STREAM = gql`
+    mutation CheckStream($id: ID!) {
+        check(id: $id)
+    }
+`
+
+export const STOP_STREAM = gql`
+    mutation StopStream($id: ID!) {
+        stopRec(id: $id)
+    }
+`

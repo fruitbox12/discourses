@@ -3,6 +3,7 @@ import {
     useHMSActions, useHMSStore, selectIsConnectedToRoom, selectPeers,
     selectCameraStreamByPeerID,
     selectHMSMessages,
+    selectRoomState,
     selectIsLocalAudioEnabled,
     selectIsLocalVideoEnabled,
     useHMSNotifications,
@@ -16,7 +17,7 @@ import Chat from "./Chat";
 import { shortAddress } from "../../../helper/StringHelper";
 import EndCallPop from "./EndCallPop";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import { END_MEET } from "../../../lib/mutations";
+import { CHECK_STREAM, END_MEET, STOP_STREAM } from "../../../lib/mutations";
 import { GET_DISCOURSE_BY_ID } from "../../../lib/queries";
 import AppContext from "../../utils/AppContext";
 import { ToastTypes } from "../../../lib/Types";
@@ -32,10 +33,10 @@ const Meet = ({ dData }: { dData: any }) => {
     const [token, setToken] = useState('');
     const [showChat, setShowChat] = useState(false);
     const [showPing, setShowPing] = useState(false);
-    const [ endEventRequest, setEndEventRequest ] = useState(false);
-    const [ endEventRequested, setEndEventRequested ] = useState(false);
+    const [endEventRequest, setEndEventRequest] = useState(false);
+    const [endEventRequested, setEndEventRequested] = useState(false);
 
-    const  { addToast } = useContext(AppContext);
+    const { addToast } = useContext(AppContext);
 
     const notification = useHMSNotifications();
 
@@ -45,7 +46,7 @@ const Meet = ({ dData }: { dData: any }) => {
 
     // onEvent to end
     const onEndEvent = useCallback((msg) => {
-        
+
         if (msg.type === REJECT_END_EVENT) {
             setEndEventRequested(false);
             setEndEventRequest(false);
@@ -63,13 +64,11 @@ const Meet = ({ dData }: { dData: any }) => {
     useEffect(() => {
     }, [isConnected, audioEnabled, videoEnabled]);
 
-    
+
     useEffect(() => {
         if (!notification) {
             return;
         }
-
-        console.log('n',notification);
 
         if (notification.type === HMSNotificationTypes.PEER_JOINED) {
             addToast({
@@ -89,7 +88,7 @@ const Meet = ({ dData }: { dData: any }) => {
                 duration: 3000
             })
         }
-        
+
         if (notification.type === HMSNotificationTypes.NEW_MESSAGE) {
             if (!showChat && notification.data.type === "chat") {
                 setShowPing(true);
@@ -102,6 +101,20 @@ const Meet = ({ dData }: { dData: any }) => {
 
 
     const peers = useHMSStore(selectPeers);
+    const roomState = useHMSStore(selectRoomState);
+
+    const [stopRec] = useMutation(STOP_STREAM, {
+        variables: {
+            id: dData.id
+        }, onError: (error) => {
+            console.log(error);
+        }
+    });
+    const [checkS] = useMutation(CHECK_STREAM, {
+        variables: {
+            id: dData.id
+        }
+    });
 
     const getViewers = () => {
         return peers.filter((peer: any) => peer.roleName === 'viewer');
@@ -109,6 +122,19 @@ const Meet = ({ dData }: { dData: any }) => {
     const getSpeakers = () => {
         return peers.filter((peer: any) => peer.roleName === 'speaker');
     }
+
+    useEffect(() => {
+        if (getSpeakers().length > 0) {
+            if (getLocalPeer()?.roleName === 'speaker') {
+                checkS();
+            }
+        } else {
+            stopRec();
+        }
+        console.log(peers);
+        
+
+    }, [peers])
 
     const handleChatClick = () => {
         if (showChat) {
@@ -130,14 +156,14 @@ const Meet = ({ dData }: { dData: any }) => {
         await hmsActions.setLocalAudioEnabled(!audioEnabled);
     }
 
-    const [ endMeet ] = useMutation(END_MEET, {
+    const [endMeet] = useMutation(END_MEET, {
         variables: {
             propId: dData.propId,
             chainId: dData.chainId,
         }
     })
 
-    const [ refetch ] = useLazyQuery(GET_DISCOURSE_BY_ID, {
+    const [refetch] = useLazyQuery(GET_DISCOURSE_BY_ID, {
         variables: {
             id: dData.id
         }
@@ -157,7 +183,7 @@ const Meet = ({ dData }: { dData: any }) => {
             type: REJECT_END_EVENT,
             by: getLocalPeer()?.id
         })
-    }    
+    }
 
     const endCall = () => {
         try {
@@ -184,35 +210,35 @@ const Meet = ({ dData }: { dData: any }) => {
                             <DiscoursePop data={dData} />
                         </div>
 
-                        { getLocalPeer()?.roleName !== 'speaker' && <button onClick={() => hmsActions.leave()} className="text-sm button-i px-4 flex items-center gap-2 font-Lexend text-[#fc8181]"> <CallSlash size='20' color="#fc8181" /> Leave </button>}
-                        { getLocalPeer()?.roleName === 'speaker' && 
+                        {getLocalPeer()?.roleName !== 'speaker' && <button onClick={() => hmsActions.leave()} className="text-sm button-i px-4 flex items-center gap-2 font-Lexend text-[#fc8181]"> <CallSlash size='20' color="#fc8181" /> Leave </button>}
+                        {getLocalPeer()?.roleName === 'speaker' &&
                             <>
-                                { endEventRequested && <button disabled className="opacity-50 text-sm button-i-d px-4 flex items-center gap-2 font-Lexend text-[#fc8181]"> <CallSlash size='20' color="#fc8181" /> Requested </button>}
-                                { endEventRequest && 
+                                {endEventRequested && <button disabled className="opacity-50 text-sm button-i-d px-4 flex items-center gap-2 font-Lexend text-[#fc8181]"> <CallSlash size='20' color="#fc8181" /> Requested </button>}
+                                {endEventRequest &&
                                     <div className="flex items-center gap-1">
                                         <EndCallPop rejectEndCall={rejectEndCall} endRoom={endCall} />
                                         {/* <button onClick={rejectEndCall} className="text-sm button-i px-4 flex items-center gap-2 font-Lexend text-[#fc8181]"> <CallSlash size='20' color="#fc8181" /> Reject Call </button> */}
                                     </div>
                                 }
-                                { !endEventRequested && !endEventRequest && <button onClick={handleEndCall} className="text-sm button-i px-4 flex items-center gap-2 font-Lexend text-[#fc8181]"> <CallSlash size='20' color="#fc8181" /> End Call </button>}
+                                {!endEventRequested && !endEventRequest && <button onClick={handleEndCall} className="text-sm button-i px-4 flex items-center gap-2 font-Lexend text-[#fc8181]"> <CallSlash size='20' color="#fc8181" /> End Call </button>}
                             </>
                         }
                     </div>
 
                     {
-                            peers.filter(p => p.roleName === "speaker").length === 0 &&
-                            <div className="inset-0 mx-auto my-auto w-full flex flex-col items-center justify-center">
-                                <p className="text-sm text-[#c6c6c6] font-Lexend "> Waiting for speakers to join..</p>
-                            </div>
-                        }
+                        peers.filter(p => p.roleName === "speaker").length === 0 &&
+                        <div className="inset-0 mx-auto my-auto w-full flex flex-col items-center justify-center">
+                            <p className="text-sm text-[#c6c6c6] font-Lexend "> Waiting for speakers to join..</p>
+                        </div>
+                    }
 
                     <div className=" flex flex-col sm:grid sm:grid-cols-2 grid-flow-row w-full gap-2">
                         {
-                            peers.filter(p => p.roleName === "speaker").slice(0,2).map((peer) => (
+                            peers.filter(p => p.roleName === "speaker").slice(0, 2).map((peer) => (
                                 <VideoTile key={peer.id} peer={peer} />
                             ))
                         }
-                        
+
                         {
                             peers.filter(p => p.roleName === "speaker").length === 1 &&
                             <div className="w-full h-full flex flex-col col-span-1 row-span-1 items-center justify-center">

@@ -40,6 +40,8 @@ export const formatDate = (date: Date) => {
     return day + ' ' + monthNames[monthIndex] + ' ' + year;
 }
 
+
+
 export const getTimeFromDate = (date: Date) => {
     const hours = date.getHours();
     const minutes = date.getMinutes();

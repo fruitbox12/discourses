@@ -115,9 +115,6 @@ export const GET_DISCOURSE_BY_ID = gql`
 
 `
 
-
-
-
 export const CHECK_TOKEN = gql`
     query CheckAuth {
         checkAuth {
@@ -168,6 +165,17 @@ export const GET_TOKEN_BY_ID = gql`
             token
             eat
             iat
+        }
+    }
+`
+
+export const GET_SESSIONS = gql`
+    query GetSessions($id: ID!) {
+        getSessions(id: $id) {
+            id
+            recordingStatus
+            recordingUrl
+            createdAt
         }
     }
 `

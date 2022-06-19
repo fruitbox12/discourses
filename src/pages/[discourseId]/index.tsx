@@ -37,6 +37,7 @@ import ChainExplorer from "../../components/utils/ChainExplorer";
 import { ToastTypes } from "../../lib/Types";
 import { uuid } from "uuidv4";
 import { getChainName, getCurrencyName } from "../../Constants";
+import RecordingsCard from "../../components/actions/RecordingsCard";
 
 async function getDiscourseContract() {
     return await new (window as any).web3.eth.Contract(
@@ -77,16 +78,6 @@ const DiscoursePage = () => {
         },
         nextFetchPolicy: 'network-only'
     })
-
-    const loadWeb3 = async () => {
-        const win = window as any;
-        if (win.ethereum) {
-            win.web3 = new Web3(win.ethereum);
-            await win.ethereum.enable();
-        } else {
-            // Show metamask error
-        }
-    }
 
     useEffect(() => {
         setLoading(Dloading);
@@ -233,6 +224,11 @@ const DiscoursePage = () => {
                                     {
                                         getStateTS(data.getDiscourseById) === 3 && canClaimC(data.getDiscourseById,walletAddress) && !hasWithdrawn(data.getDiscourseById, walletAddress) &&
                                         <FundClaimCardC data={data.getDiscourseById} />
+                                    }
+
+                                    {
+                                        getStateTS(data.getDiscourseById) === 3 &&
+                                        <RecordingsCard data={data.getDiscourseById} />
                                     }
 
                                     {
