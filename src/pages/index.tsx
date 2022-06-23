@@ -30,7 +30,7 @@ const Home: NextPage = () => {
 
 	const { loading: dLoading, error: dError, data: dData } = useQuery(GET_DISCOURSES_BY_CHAIN, {
 		variables: {
-			chainId: 80001
+			chainId: supportedChainIds[0]
 		}
 	});
 	const [refetch] = useLazyQuery(GET_DISCOURSES);
