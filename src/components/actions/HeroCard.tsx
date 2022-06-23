@@ -66,7 +66,7 @@ const HeroCard = () => {
                 <p className="text-[10px] font-Lexend text-[#c6c6c6]">You&apos;re currently on </p>
                 <div className="py-2 px-4 bg-white/10 border-[2px] border-white/10 w-max rounded-full my-2 flex items-center gap-2">
                     <ChainIcon chainId={137} />
-                    {<p className="text-[10px] text-[#7B3FE4] font-bold">{activeChain?.name} Mainnet</p>}
+                    {<p className="text-[10px] text-[#7B3FE4] font-bold">Polygon Mainnet</p>}
                 </div>
                 <Link href="https://testnet.discourses.agorasquare.io" passHref>
                     <button className="button-t flex items-center gap-2 w-max p-0 mt-4">

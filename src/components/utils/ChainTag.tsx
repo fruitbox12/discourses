@@ -51,15 +51,15 @@ export const SChainTag = ({ chainId }: { chainId: number }) => {
         setHovering(false);
     }
 
-    if (chainId === 1313161555) {
-        return (
-            <div onMouseEnter={() => handleStart()} onMouseLeave={() => handleEnd()} className="relative h-max flex items-center bg-[#78D64B]/20 rounded-lg p-1 ring-0 transition-all">
-                <Aurora16 />
-                <p className={` ${hovering ? 'block' : 'hidden'} t-all absolute pointer-events-none bg-card px-2 py-1 rounded-lg overflow-clip w-max m-auto right-0 translate-x-full translate-y-[50%] text-[10px] font-medium text-[#c6c6c6] font-Lexend ml-2 mr-1`}>Aurora</p>
-            </div>
-        );
-    }
-    if (chainId === 4) {
+    // if (chainId === 1313161555) {
+    //     return (
+    //         <div onMouseEnter={() => handleStart()} onMouseLeave={() => handleEnd()} className="relative h-max flex items-center bg-[#78D64B]/20 rounded-lg p-1 ring-0 transition-all">
+    //             <Aurora16 />
+    //             <p className={` ${hovering ? 'block' : 'hidden'} t-all absolute pointer-events-none bg-card px-2 py-1 rounded-lg overflow-clip w-max m-auto right-0 translate-x-full translate-y-[50%] text-[10px] font-medium text-[#c6c6c6] font-Lexend ml-2 mr-1`}>Aurora</p>
+    //         </div>
+    //     );
+    // }
+    if (chainId === 137) {
         return (
             <div onMouseEnter={() => handleStart()} onMouseLeave={() => handleEnd()} className="relative h-max flex items-center bg-[#716B94]/20 rounded-lg p-1 ring-0 transition-all">
                 <Ethereum16 />
@@ -77,21 +77,21 @@ export const SChainTag = ({ chainId }: { chainId: number }) => {
 }
 export const IChainTag = ({ chainId }: { chainId: number }) => {
 
-    if (chainId === 1313161555) {
-        return (
-            <div className="relative h-max flex items-center p-[4px] border border-[#212427] bg-[#141515] rounded-lg ring-0 transition-all">
-                <Aurora16 />
-            </div>
-        );
-    }
+    // if (chainId === 1313161555) {
+    //     return (
+    //         <div className="relative h-max flex items-center p-[4px] border border-[#212427] bg-[#141515] rounded-lg ring-0 transition-all">
+    //             <Aurora16 />
+    //         </div>
+    //     );
+    // }
 
-    if (chainId === 80001) {
-        return (
-            <div className="relative h-max flex justify-center p-[4px] items-center border border-[#212427] bg-[#141515] rounded-lg transition-all">
-                <Polygon16 />
-            </div>
-        );
-    }
+    // if (chainId === 80001) {
+    //     return (
+    //         <div className="relative h-max flex justify-center p-[4px] items-center border border-[#212427] bg-[#141515] rounded-lg transition-all">
+    //             <Polygon16 />
+    //         </div>
+    //     );
+    // }
     if (chainId === 137) {
         return (
             <div className="relative h-max flex justify-center p-[4px] items-center border border-[#212427] bg-[#141515] rounded-lg transition-all">
@@ -99,13 +99,13 @@ export const IChainTag = ({ chainId }: { chainId: number }) => {
             </div>
         );
     }
-    if (chainId === 4) {
-        return (
-            <div className="relative h-max flex justify-center p-[4px] items-center border border-[#212427] bg-[#141515] rounded-lg transition-all">
-                <Ethereum16 />
-            </div>
-        );
-    }
+    // if (chainId === 4) {
+    //     return (
+    //         <div className="relative h-max flex justify-center p-[4px] items-center border border-[#212427] bg-[#141515] rounded-lg transition-all">
+    //             <Ethereum16 />
+    //         </div>
+    //     );
+    // }
 
     return (
         <div className="relative h-max flex justify-center p-[4px] items-center border border-[#212427] bg-[#141515] rounded-lg transition-all">
@@ -116,28 +116,28 @@ export const IChainTag = ({ chainId }: { chainId: number }) => {
 
 export const ChainIcon = ({ chainId }: { chainId: number }) => {
 
-    if (chainId === 1313161555) {
-        return (
-            <Aurora16 />
-        );
-    }
+    // if (chainId === 1313161555) {
+    //     return (
+    //         <Aurora16 />
+    //     );
+    // }
 
     if (chainId === 137) {
         return (
             <Polygon16 />
         );
     }
-    if (chainId === 80001) {
-        return (
-            <Polygon16 />
-        );
-    }
+    // if (chainId === 80001) {
+    //     return (
+    //         <Polygon16 />
+    //     );
+    // }
 
-    if (chainId === 4) {
-        return (
-            <Ethereum16 />
-        );
-    }
+    // if (chainId === 4) {
+    //     return (
+    //         <Ethereum16 />
+    //     );
+    // }
 
     return (
         <Box2 size={16} color="#c6c6c6" />
