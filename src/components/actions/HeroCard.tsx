@@ -37,8 +37,8 @@ const HeroCard = () => {
     }
 
     return (
-        <div className="w-full flex items-center justify-between px-2 py-6">
-            <div className="flex flex-col">
+        <div className="w-full flex items-center justify-between px-2 sm:px-10 py-6">
+            <div className="flex flex-col w-max ">
                 <h4 className="text-white font-Lexend">Introducing</h4>
                 <h2 className="text-gradient font-bold text-4xl">Discourses</h2>
                 <p className="text-[#c6c6c6] font-Lexend text-[10px] max-w-[50ch] mt-2">
@@ -52,15 +52,22 @@ const HeroCard = () => {
                         <Add size={16} color="#fff" />
                         <p className="text-xs text-white font-Lexend ">Create New Disourse</p>
                     </button>
+                    <Link href="https://testnet.discourses.agorasquare.io" passHref >
+                        <a target="_blank" className="button-t flex sm:hidden items-center gap-2 w-max p-2 ">
+                            <p className="text-xs text-[#1FA2FF] font-Lexend ">Explore testnet</p>
+                            <ArrowNE color="#1FA2FF" />
+                        </a>
+                    </Link>
                 </div>
             </div>
 
-            <div className="flex flex-[0.6] flex-col h-full relative px-10 justify-center">
+            <div className="hidden sm:flex flex-[0.6] flex-col h-full relative px-10 justify-center">
                 <div className="w-[1px] h-full bg-[#303030] absolute left-0" />
                 <p className="text-[10px] font-Lexend text-[#c6c6c6]">You&apos;re currently on </p>
                 <div className="py-2 px-4 bg-white/10 border-[2px] border-white/10 w-max rounded-full my-2 flex items-center gap-2">
                     <ChainIcon chainId={activeChain?.id!} />
-                    <p className="text-[10px] text-[#7B3FE4] font-bold">{activeChain?.name}</p>
+                    {activeChain?.id === supportedChainIds[0] && <p className="text-[10px] text-[#7B3FE4] font-bold">{activeChain?.name}</p>}
+                    {activeChain?.id !== supportedChainIds[0] && <p className="text-[10px] text-[#c6c6c6] font-bold">Unsupported Chain</p>}
                 </div>
                 <Link href="https://testnet.discourses.agorasquare.io" passHref>
                     <button className="button-t flex items-center gap-2 w-max p-0 mt-4">

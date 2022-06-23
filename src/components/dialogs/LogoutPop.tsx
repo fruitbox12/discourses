@@ -18,7 +18,7 @@ const LogoutPop = () => {
     const { disconnectAsync } = useDisconnect();
     const { t_connected, walletAddress, t_handle, addToast } = useContext(AppContext);
     const { refresh } = useContext(AppContext);
-    const { activeChain } = useNetwork();
+    const { activeChain, switchNetworkAsync } = useNetwork();
     const [switching, setSwitching] = useState(false);
     const bal = useBalance({
         addressOrName: walletAddress,
@@ -32,6 +32,31 @@ const LogoutPop = () => {
             refresh();
         }).catch(err => {
             console.log(err);
+        })
+    }
+
+    const handleSwitch = (id: number) => {
+        setSwitching(true);
+        addToast({
+            title: "Switching Network",
+            body: 'Please check your wallet for network switch approval.',
+            type: ToastTypes.wait,
+            id: uuid(),
+            duration: 5000
+        })
+        switchNetworkAsync?.(id).then(() => {
+            setSwitching(false);
+        }).catch(err => {
+            console.log(err);
+            setSwitching(false);
+
+            addToast({
+                title: "Error Switching Network",
+                body: err.message,
+                type: ToastTypes.error,
+                id: uuid(),
+                duration: 5000
+            })
         })
     }
 
@@ -92,11 +117,11 @@ const LogoutPop = () => {
                             </div> */}
 
                             {activeChain?.id !== supportedChainIds[0] &&
-                                <button onClick={() => handleLogout()} className={`w-full flex items-center mt-[2px] gap-2 button-t py-2 hover:bg-[#212427]`}>
+                                <button onClick={() => handleSwitch(supportedChainIds[0])} className={`w-full flex items-center mt-[2px] gap-2 button-t py-2 hover:bg-[#212427]`}>
                                     {!switching && <Repeat size={16} color="#c6c6c6" />}
                                     <p className="text-[10px] text-[#c6c6c6]">{switching ? 'Switching..' : 'Switch Chain'}</p>
                                 </button>}
-                                
+
                             {activeChain?.id === supportedChainIds[0] &&
                                 <div className={`w-full flex items-center mt-[2px] gap-2 button-t py-2 `}>
                                     {!switching && <ChainIcon chainId={activeChain?.id!} />}

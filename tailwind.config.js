@@ -3,7 +3,11 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    
     extend: {
+      screens: {
+        'md2' : '900px'
+      },
       fontFamily: {
         'montserrat': ['Montserrat', 'sans-serif'],
         'Lexend': ['Lexend', 'sans-serif'],
