@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 import { useContext, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLazyQuery, useQuery } from '@apollo/client'
-import { GET_DISCOURSES } from '../lib/queries'
+import { GET_DISCOURSES, GET_DISCOURSES_BY_CHAIN } from '../lib/queries'
 import LoadingSpinner from '../components/utils/LoadingSpinner'
 import ConnectWalletDailog from '../components/dialogs/ConnectWalletDailog'
 import TopBar from '../components/topbar/TopBar'
@@ -18,6 +18,7 @@ import { useNetwork } from 'wagmi'
 import { supportedChainIds } from '../Constants'
 import { ToastTypes } from '../lib/Types'
 import { uuid } from 'uuidv4'
+import HeroCard from '../components/actions/HeroCard'
 
 
 const Home: NextPage = () => {
@@ -27,7 +28,11 @@ const Home: NextPage = () => {
 	const [openConnectWallet, setOpenConnectWallet] = useState(false);
 	const [ showAll, setShowAll ] = useState(false);
 
-	const { loading: dLoading, error: dError, data: dData } = useQuery(GET_DISCOURSES);
+	const { loading: dLoading, error: dError, data: dData } = useQuery(GET_DISCOURSES_BY_CHAIN, {
+		variables: {
+			chainId: 80001
+		}
+	});
 	const [refetch] = useLazyQuery(GET_DISCOURSES);
 	const { activeChain }  = useNetwork();
 	
@@ -44,7 +49,7 @@ const Home: NextPage = () => {
 			} else {
 				addToast({
 					title: "Chain not supported",
-					body: "Discourses only supports 'Polygon' & 'Aurora' chain. Please switch to one of them.",
+					body: "Discourses only supports 'Polygon' chain. Please use correct chain",
 					type: ToastTypes.error,
 					id: uuid(),
 					duration: 6000
@@ -54,7 +59,6 @@ const Home: NextPage = () => {
 			setOpenConnectWallet((prev: boolean) => !prev);
 		}
 	}
-	
 	
 	return (
 		<div className="w-full h-screen overflow-x-clip">
@@ -70,41 +74,32 @@ const Home: NextPage = () => {
 					{/* TopSection */}
 					<TopBar />
 					{/* Body */}
-					{ !showAll && <div className='w-full bg-card items-center px-10 py-8 rounded-xl mt-8 flex justify-between'>
-						<div className='flex flex-col gap-1'>
-							<h3 className='text-white font-semibold'>Start a Discourse</h3>
-							<p className='text-white/40 font-medium text-xs'>Invite speakers to your discourse from Twitter!</p>
-							{!loggedIn && <>
-								<ConnectWalletDailog open={openConnectWallet} setOpen={setOpenConnectWallet} />
-								{/* <button onClick={() =>  setOpenConnectWallet((prev: boolean) =>  )} className='text-blue-500 w-max text-sm font-medium mt-4' >Create one &rarr;</button> */}
-							</>
-							}
-							<button onClick={() => handleCreate() } className='text-blue-500 w-max text-sm font-medium mt-4' >Create one &rarr;</button>
-						</div>
-						<img src="/discourse_g1.png" alt="" />
-					</div>}
+					{ !showAll &&
+						<HeroCard />
+					}
 					{/* explore */}
-					{dData && dData.getDiscourses.length != 0 && <nav className='flex items-center justify-between py-4 px-2'>
+					{/* {dData && dData.getDiscoursesByChainID.length != 0 && <nav className='flex items-center justify-between py-4 px-2'>
 						<div className='flex flex-col gap-1'>
 							<h3 className='text-white font-semibold'>Explore</h3>
 							<p className='text-white/40 font-medium text-xs hidden sm:flex'>Listen in to the most interesting discourses on web3</p>
 						</div>
 						{
 							<button onClick={() => setShowAll(prev => !prev)} className='text-blue-500 w-max text-xs font-medium mt-4' >{showAll ? 'Show less' : 'Show all'}</button>}
-					</nav>}
+					</nav>} */}
 					{/* list */}
 					<div className='w-full flex flex-col items-center gap-2'>
 						{
-							dData && dData.getDiscourses.length > 0 &&
-							[].concat(dData.getDiscourses).sort(
+							dData && dData.getDiscoursesByChainID.length > 0 &&
+							[].concat(dData.getDiscoursesByChainID).sort(
 								(a: any, b: any) => +b.initTS - +a.initTS
-							).slice(0, showAll ? dData.getDiscourses.length : dData.getDiscourses.length > 4 ? 4 : dData.getDiscourses.length)
+							)
+							// .slice(0, showAll ? dData.getDiscoursesByChainID.length : dData.getDiscoursesByChainID.length > 4 ? 4 : dData.getDiscoursesByChainID.length)
 							.map((data: any) => (
 								<DiscourseLongList state={0} key={data.id} data={data} />
 							))
 						}
 						{
-							dData && dData.getDiscourses.length == 0 &&
+							dData && dData.getDiscoursesByChainID.length == 0 &&
 							<div className='w-full py-4 flex items-center justify-center mt-10'>
 								<img className='w-36' src="/404_discourses.png" alt="" />
 							</div>

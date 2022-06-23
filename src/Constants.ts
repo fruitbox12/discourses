@@ -1,17 +1,11 @@
 export const supportedChainIds = [
-    1313161555, //aurora
-    80001, //Polygon
-    4 //Rinkeby
+    137 // Polygon Mainnet
 ]
 
 export const getChainName = (chainId: number) => {
     switch (chainId) {
-        case 80001:
-            return 'Polygon Mumbai'
-        case 1313161555:
-            return 'Aurora Testnet'
-        case 4:
-            return 'Rinkeby Testnet'
+        case 137:
+            return 'Polygon'
         default:
             return 'Unknown'
     }
@@ -19,10 +13,8 @@ export const getChainName = (chainId: number) => {
 
 export const getCurrencyName = (chainId: number) => {
     switch (chainId) {
-        case 80001:
+        case 137:
             return 'MATIC'
-        case 1313161555:
-            return 'ETH'
         default:
             return 'ETH'
     }
@@ -30,12 +22,8 @@ export const getCurrencyName = (chainId: number) => {
 
 export const rpcUrl = (chainId: number) => {
     switch (chainId) {
-        case 80001:
-            return { http: 'https://polygon-mumbai.g.alchemy.com/v2/ksqleRX25aRSLQ9uawfAwVTlQ8gKLULj'}
-        case 1313161555:
-            return { http: 'https://aurora-testnet.infura.io/v3/a4d6ff8d0a7c4b93a9a4ac41adc048c8'};
-        case 4:
-            return {  http: 'https://eth-rinkeby.alchemyapi.io/v2/WvYNyDhms47fYoy5xazaVd7VpkT7G0QP'};
+        case 137:
+            return { http: 'https://polygon-mainnet.g.alchemy.com/v2/Gqd71GlllOjZhCCq1FjqzKofdLig5Tww'}
         default:
             return null;
 

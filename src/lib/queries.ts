@@ -45,6 +45,46 @@ export const GET_DISCOURSES = gql`
         }
     }
 `
+export const GET_DISCOURSES_BY_CHAIN = gql`
+    query GetDiscourses($chainId: Int!) {
+        getDiscoursesByChainID(chainId: $chainId) {
+            id
+            title
+            description
+            speakers {
+                name
+                username
+                address
+                confirmed
+            }
+            propId
+            chainId
+            prop_description
+            prop_starter
+            charityPercent
+            initTS
+            endTS
+            funds {
+                address
+                amount
+                timestamp
+                txnHash
+            }
+            status {
+                disputed
+                completed
+                terminated
+                speakersConfirmation
+            }
+            discourse {
+                room_id
+                ended
+                meet_date
+                confirmation
+            }
+        }
+    }
+`
 
 export const GET_DISCOURSE_BY_ID = gql`
     query GetDiscourseById($id: ID!) {

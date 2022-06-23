@@ -21,33 +21,33 @@ import ContextWrapper from '../components/utils/ContextWrapper'
 import { rpcUrl } from '../Constants'
 
 
-const auroraChain: Chain = {
-  id: 1313161555,
-  name: 'Aurora Testnet',
-  network: 'aurora',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Ethereum',
-    symbol: 'ETH'
-  },
-  rpcUrls: {
-    default: 'https://aurora-testnet.infura.io/v3/a4d6ff8d0a7c4b93a9a4ac41adc048c8'
-  },
-  blockExplorers: {
-    etherscan: {
-      name: 'Aurorascan',
-      url: 'https://testnet.aurorascan.dev/',
-    },
-    default: {
-      name: 'Aurorascan',
-      url: 'https://testnet.aurorascan.dev/'
-    }
-  },
-  testnet: true
-}
+// const auroraChain: Chain = {
+//   id: 1313161555,
+//   name: 'Aurora Testnet',
+//   network: 'aurora',
+//   nativeCurrency: {
+//     decimals: 18,
+//     name: 'Ethereum',
+//     symbol: 'ETH'
+//   },
+//   rpcUrls: {
+//     default: 'https://aurora-testnet.infura.io/v3/a4d6ff8d0a7c4b93a9a4ac41adc048c8'
+//   },
+//   blockExplorers: {
+//     etherscan: {
+//       name: 'Aurorascan',
+//       url: 'https://testnet.aurorascan.dev/',
+//     },
+//     default: {
+//       name: 'Aurorascan',
+//       url: 'https://testnet.aurorascan.dev/'
+//     }
+//   },
+//   testnet: true
+// }
 
 const { provider, chains } = configureChains(
-  [chain.polygonMumbai, auroraChain, chain.rinkeby],
+  [ chain.polygon ],
   [
     alchemyProvider({ alchemyId: 'ksqleRX25aRSLQ9uawfAwVTlQ8gKLULj' }),
     infuraProvider({ infuraId: 'a4d6ff8d0a7c4b93a9a4ac41adc048c8' }),

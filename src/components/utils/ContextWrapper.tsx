@@ -31,17 +31,17 @@ const ContextWrapper: FC<Props> = ({ children }) => {
 
     const route = useRouter();
     
-    useEffect(() => {
-        if (route.asPath.includes('/create')) {
-            handleAddToast({
-                title: "Choose Chain",
-                body: "Discourses supports 'Polygon', 'Aurora' & 'Rinkeby' chain. Creating a discourse will automatically create a proposal on the selected chain. If you want to create a proposal on a different chain, please change from top right menu.",
-                type: ToastTypes.info,
-                id: uuid(),
-                duration: 20000
-            })
-        }
-    }, [route.asPath])
+    // useEffect(() => {
+    //     if (route.asPath.includes('/create')) {
+    //         handleAddToast({
+    //             title: "Choose Chain",
+    //             body: "Discourses only supports 'Polygon' chain. Please use propper chain to create a discourse",
+    //             type: ToastTypes.info,
+    //             id: uuid(),
+    //             duration: 20000
+    //         })
+    //     }
+    // }, [route.asPath])
 
     useEffect(() => {
         console.log('status:', status);
