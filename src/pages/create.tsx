@@ -54,7 +54,7 @@ let mockD: CreateObj = {
     initTS: "",
     endTS: "",
     topics: [],
-    initialFunding: "0.01",
+    initialFunding: "1",
     fundingPeriod: 0
 }
 
@@ -157,7 +157,7 @@ const CreateDiscoursePage = () => {
             initTS: "",
             endTS: "",
             topics: topics,
-            initialFunding: "0.01",
+            initialFunding: "1",
             fundingPeriod: selectedDuration.sec
         }
 
