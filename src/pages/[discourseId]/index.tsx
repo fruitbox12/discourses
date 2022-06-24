@@ -38,6 +38,7 @@ import { ToastTypes } from "../../lib/Types";
 import { uuid } from "uuidv4";
 import { getChainName, getCurrencyName } from "../../Constants";
 import RecordingsCard from "../../components/actions/RecordingsCard";
+import useTwitterProfile from "../../hooks/useTwitterProfile";
 
 async function getDiscourseContract() {
     return await new (window as any).web3.eth.Contract(
@@ -117,6 +118,9 @@ const DiscoursePage = () => {
         }
         return false;
     }
+
+    const u1 = useTwitterProfile(data?.getDiscourseById.speakers[0].username);
+    const u2 = useTwitterProfile(data?.getDiscourseById.speakers[1].username);
 
     const { activeChain, chains, switchNetworkAsync } = useNetwork();
     
@@ -297,15 +301,15 @@ const DiscoursePage = () => {
                                             <div className='flex items-center w-16 h-8 relative'>
                                                 <div className='flex items-center w-8 h-8 rounded-xl ring-[3px] ring-[#141515] overflow-clip'>
                                                     {/* TODO: add twitter fetch avatar */}
-                                                    <img className="scale-105 w-8 h-8 object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${data.getDiscourseById.speakers[0].name}`} alt="" />
+                                                    <img className="scale-105 w-8 h-8 object-cover rounded-xl object-center" src={u1?.profile_image_url} alt="" />
                                                 </div>
                                                 <div className='flex items-center absolute left-[35%] w-8 h-8 rounded-xl ring-[3px] ring-[#141515] overflow-clip'>
-                                                    <img className="scale-105 w-8 h-8 object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${data.getDiscourseById.speakers[1].name}`} alt="" />
+                                                    <img className="scale-105 w-8 h-8 object-cover rounded-xl object-center" src={u2?.profile_image_url} alt="" />
                                                 </div>
                                             </div>
                                             <div className='flex flex-col'>
-                                                <a href="#" className='hover:text-white/60 text-white/30 text-xs uppercase tracking-wide font-medium'>{data.getDiscourseById.speakers[0].name}</a>
-                                                <a href="#" className='hover:text-white/60 text-white/30 text-xs uppercase tracking-wide font-medium'>{data.getDiscourseById.speakers[1].name}</a>
+                                                <a href={`https://twitter.com/${u1?.screen_name}`} className='hover:text-white/60 text-white/30 text-xs uppercase tracking-wide font-medium'>{u1?.name}</a>
+                                                <a href={`https://twitter.com/${u2?.screen_name}`} className='hover:text-white/60 text-white/30 text-xs uppercase tracking-wide font-medium'>{u2?.name}</a>
                                             </div>
                                         </div>
 

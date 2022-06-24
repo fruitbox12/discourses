@@ -4,7 +4,9 @@ import { getCurrencyName } from "../../Constants";
 import { getMeetDateTS, getStateTS } from "../../helper/DataHelper";
 import { getFundTotal } from "../../helper/FundHelper";
 import { getTime, formatDate, getState, getTimeFromDate } from "../../helper/TimeHelper";
+import useTwitterProfile from "../../hooks/useTwitterProfile";
 import ChainTag, { SChainTag } from "../utils/ChainTag";
+import Image from "next/image";
 
 const DiscourseLongList = ({ state, data }: { state: number, data: any }) => {
     const route = useRouter();
@@ -13,46 +15,45 @@ const DiscourseLongList = ({ state, data }: { state: number, data: any }) => {
         route.push(`/${data.id}`)
     }
 
+    const u1 = useTwitterProfile(data.speakers[0].username);
+    const u2 = useTwitterProfile(data.speakers[1].username);
+    
+
     return (
-        <div onClick={handleClick} className='w-full bg-card p-4 rounded-xl flex flex-col sm:flex-row gap-2 sm:gap-0 sm:items-center justify-between'>
+        <div onClick={handleClick} className='cursor-pointer w-full bg-card p-4 rounded-xl flex flex-col gap-2 justify-between'>
             {/* left section */}
-            <div className='flex flex-row-reverse sm:flex-row items-center gap-2 flex-1 w-full sm:flex-[0.7]'>
-                <div className='flex justify-end sm:justify-start items-center gap-1 flex-[0.3]'>
-                    {/* avatar */}
-                    <div className='flex items-center w-16 h-8 relative'>
-                        <div className='flex items-center w-8 h-8 rounded-xl ring-[3px] ring-[#141515] overflow-clip'>
-                            {/* TODO: add twitter fetch avatar */}
-                            <img className="scale-105 w-8 h-8 object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${data.speakers[0].name}`} alt="" />
-                        </div>
-                        <div className='flex items-center absolute left-[35%] w-8 h-8 rounded-xl ring-[3px] ring-[#141515] overflow-clip'>
-                            <img className="scale-105 w-8 h-8 object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${data.speakers[1].name}`} alt="" />
-                        </div>
-                    </div>
-                    <div className='sm:flex flex-col hidden'>
-                        <h4 className='text-white/30 text-xs uppercase tracking-wide font-medium'>{data.speakers[0].name}</h4>
-                        <h4 className='text-white/30 text-xs uppercase tracking-wide font-medium'>{data.speakers[1].name}</h4>
-                    </div>
+
+            {/* avatar */}
+            <div className="flex items-center gap-2">
+
+            <div className='flex items-center w-16 h-8 relative'>
+                <div className='flex items-center w-8 h-8 rounded-xl ring-[3px] ring-[#141515] overflow-clip'>
+                    {/* TODO: add twitter fetch avatar */}
+                    <img className="scale-105 w-8 h-8 object-cover rounded-xl object-center" src={u1?.profile_image_url!} alt="" />
                 </div>
-                {/* divider */}
-                <div className='w-[2px] mx-1 h-8 bg-[#212427] hidden sm:flex rounded-xl' />
-                {/* title */}
-                <div className='flex flex-col flex-[0.7] gap-1'>
-                    <h3 className='text-white text-sm font-semibold'>{data.title}</h3>
-                    <div className="flex items-center gap-4">
-                        <SChainTag chainId={data.chainId} />
-                        <p className='text-[#68D391] font-bold text-xs'>{getFundTotal(data.funds)} {getCurrencyName(data.chainId)}</p>
-                    </div>
+                <div className='flex items-center absolute left-[35%] w-8 h-8 rounded-xl ring-[3px] ring-[#141515] overflow-clip'>
+                    <img className="scale-105 w-8 h-8 object-cover rounded-xl object-center" src={u2?.profile_image_url} alt="" />
                 </div>
             </div>
+            <div className='flex flex-col'>
+                <h4 className='text-[#c6c6c6] text-xs tracking-wide font-medium line-clamp-1'>{u1?.name}</h4>
+                <h4 className='text-[#c6c6c6] text-xs tracking-wide font-medium line-clamp-1'>{u2?.name}</h4>
+            </div>
+            </div>
 
-            {/* right section */}
-            <div className='flex items-center gap-4 flex-[0.3] justify-between'>
-                {/* Discourse state */}
-                <StateView state={getStateTS(data)} data={data} />
+            {/* title */}
+            <h3 className='text-white text-sm font-semibold line-clamp-2'>{data.title}</h3>
+            {/* divider */}
+            <div className='w-full mx-1 h-[1px] bg-[#303030] flex rounded-xl' />
 
-                <button onClick={handleClick} className='button-s text-sm font-medium'>
-                    &rarr;
-                </button>
+            <div className="flex w-full justify-between items-center">
+                <div className='flex items-center gap-4 flex-1 justify-between min-h-[36px]'>
+                    <StateView state={getStateTS(data)} data={data} />
+                </div>
+                <div className="flex items-center justify-end gap-2 flex-1">
+                    <SChainTag chainId={data.chainId} />
+                    <p className='text-[#68D391] font-bold text-xs'>{getFundTotal(data.funds)} {getCurrencyName(data.chainId)}</p>
+                </div>
             </div>
         </div>
     );
@@ -103,7 +104,7 @@ const StateView = ({ state, data }: { state: number, data: any }) => {
     }
 
     if (state === 3) {
-        return(
+        return (
             <div className='flex flex-col gap-1'>
                 <div className='flex items-end gap-2'>
                     <Verify size="16" color="#ABECD6" variant='Bold' />

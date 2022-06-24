@@ -30,7 +30,7 @@ const Home: NextPage = () => {
 
 	const { loading: dLoading, error: dError, data: dData } = useQuery(GET_DISCOURSES_BY_CHAIN, {
 		variables: {
-			chainId: supportedChainIds[0]
+			chainId: 80001
 		}
 	});
 	const [refetch] = useLazyQuery(GET_DISCOURSES);
@@ -87,7 +87,7 @@ const Home: NextPage = () => {
 							<button onClick={() => setShowAll(prev => !prev)} className='text-blue-500 w-max text-xs font-medium mt-4' >{showAll ? 'Show less' : 'Show all'}</button>}
 					</nav>} */}
 					{/* list */}
-					<div className='w-full flex flex-col items-center gap-2'>
+					<div className='w-full grid grid-cols-1 sm:grid-cols-2 md2:grid-cols-3 grid-flow-row items-center px-4 sm:px-10 md2:px-0 gap-2'>
 						{
 							dData && dData.getDiscoursesByChainID.length > 0 &&
 							[].concat(dData.getDiscoursesByChainID).sort(
