@@ -30,7 +30,7 @@ const Home: NextPage = () => {
 
 	const { loading: dLoading, error: dError, data: dData } = useQuery(GET_DISCOURSES_BY_CHAIN, {
 		variables: {
-			chainId: 80001
+			chainId: supportedChainIds[0]
 		}
 	});
 	const [refetch] = useLazyQuery(GET_DISCOURSES);
@@ -87,7 +87,7 @@ const Home: NextPage = () => {
 							<button onClick={() => setShowAll(prev => !prev)} className='text-blue-500 w-max text-xs font-medium mt-4' >{showAll ? 'Show less' : 'Show all'}</button>}
 					</nav>} */}
 					{/* list */}
-					<div className='w-full grid grid-cols-1 sm:grid-cols-2 md2:grid-cols-3 grid-flow-row items-center px-4 sm:px-10 md2:px-0 gap-2'>
+					<div className='relative w-full grid grid-cols-1 sm:grid-cols-2 md2:grid-cols-3 grid-flow-row items-center px-4 sm:px-10 md2:px-0 gap-2'>
 						{
 							dData && dData.getDiscoursesByChainID.length > 0 &&
 							[].concat(dData.getDiscoursesByChainID).sort(
@@ -100,19 +100,19 @@ const Home: NextPage = () => {
 						}
 						{
 							dData && dData.getDiscoursesByChainID.length == 0 &&
-							<div className='w-full py-4 flex items-center justify-center mt-10'>
+							<div className='absolute inset-0 top-10 w-full py-4 flex items-center justify-center mt-10'>
 								<img className='w-36' src="/404_discourses.png" alt="" />
 							</div>
 						}
 						{
 							dLoading &&
-							<div className='w-full py-4 flex items-center justify-center'>
+							<div className='w-full absolute inset-0 top-10 py-4 flex items-center justify-center'>
 								<LoadingSpinner strokeColor='#ffffff' />
 							</div>
 						}
 						{
 							dError &&
-							<div className='w-full py-4 flex items-center justify-center'>
+							<div className='absolute inset-0 top-10 w-full py-4 flex items-center justify-center'>
 								<p className='text-white/30 text-sm'>Error gettting Discourses</p>
 							</div>
 						}
