@@ -52,7 +52,7 @@ const CreateCard: FC<Props> = ({ speakers, title }) => {
 
             <div className="flex w-full items-center gap-2">
                 <ChainTag chainId={activeChain?.id!} />
-                <p className='text-[#8e8e8e] max-w-[20ch] text-[10px] font-Lexend'>Click on wallet to change chain</p>
+                <p className='text-[#8e8e8e] max-w-[20ch] text-[10px] font-Lexend'>Currently, only Polygon chain is supported.</p>
             </div>
         </div>
     );
