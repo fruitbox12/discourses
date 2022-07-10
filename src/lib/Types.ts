@@ -29,3 +29,9 @@ export type Toast = {
     id: string;
     duration?: number;
 }
+
+export interface Speaker {
+    screen_name: string;
+    name: string;
+    profile_image_url: string;
+}

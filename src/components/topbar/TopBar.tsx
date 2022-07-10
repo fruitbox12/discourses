@@ -22,26 +22,15 @@ const TopBar = () => {
 
 	return (
 		<nav className='flex items-center justify-between px-4 lg:px-0'>
-			<button onClick={() => route.back()} className={`text-[#616162]  ${route.pathname === '/' ? 'opacity-0' : '' }  text-xs sm:text-sm text-left font-semibold w-[20%]`}>
+			<button onClick={() => {
+				if (route.pathname !== "/") {
+					route.back()
+				}
+			}} className={`text-[#616162]  ${route.pathname === '/' ? 'opacity-0 cursor-default' : '' }  text-xs sm:text-sm text-left font-semibold w-[20%]`}>
 				&larr; {route.pathname === '/' ? 'AGORA' : 'Back'}
 			</button>
-			<Branding />
+			{ !route.asPath.includes('create') && <Branding />}
 			{loggedIn && 
-			// <div className='cursor-default flex items-center justify-end gap-2 text-[#616162] text-sm font-semibold w-[20%]'>
-			// 	<div className='hidden sm:flex items-center overflow-clip bg-gradient w-6 h-6 rounded-xl' >
-			// 		<img className="w-6 h-6 object-cover rounded-xl object-center" src={`https://avatar.tobi.sh/${walletAddress}`} alt="" />
-			// 	</div>
-			// 	<div className="flex flex-col justify-center">
-			// 		<p className='text-white text-[10px] sm:text-xs'>{shortAddress(walletAddress === "" ? '' : walletAddress)}</p>
-			// 		{!t_connected && 
-			// 			<Link href="/link" >
-			// 			<a className="text-[10px] text-[#1DA1F2] font-semibold">Link Twitter</a>
-			// 			</Link>
-			// 		}
-			// 		{t_connected && <p className="text-[10px] text-[#1DA1F2] font-semibold flex items-center gap-1"><Twitter_x10 /> {t_handle}</p>
-			// 		}
-			// 	</div>
-			// </div>
 			<LogoutPop />
 			}
 

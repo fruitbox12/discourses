@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { Dispatch, SetStateAction, useContext, useRef } from "react";
+import { Dispatch, FC, SetStateAction, useContext, useRef } from "react";
 import { useRouter } from 'next/router';
 import Web3 from "web3";
 import { BigNumber, ethers } from "ethers";
@@ -20,9 +20,13 @@ import { getCurrencyName, supportedChainIds } from '../../Constants';
 import { ToastTypes } from '../../lib/Types';
 import { uuid } from 'uuidv4';
 
+interface Props {
+    open: boolean;
+    setOpen: Dispatch<SetStateAction<boolean>>;
+    data: any;
+}
 
-
-const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen: Dispatch<SetStateAction<boolean>>, data: any }) => {
+const CreateDiscourseDialog: FC<Props> = ({ open, setOpen, data }) => {
     let buttonRef = useRef(null);
     const { loggedIn, walletAddress, addToast } = useContext(AppContext);
 
@@ -30,7 +34,7 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
     const [txn, setTxn] = useState("");
     const [funded, setFunded] = useState(false);
     const [error, setError] = useState({});
-    const [amount, setAmount] = useState('1');
+    const [amount, setAmount] = useState('0.01');
     const [discourseId, setDiscourseId] = useState('');
     const { activeChain } = useNetwork();
 
@@ -164,7 +168,6 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
 
 
     const handleFundClick = async () => {
-
         if (supportedChainIds.includes(activeChain?.id!)) {
             addToast({
                 title: "Waiting for confirmation",
@@ -202,7 +205,7 @@ const CreateDiscourseDialog = ({ open, setOpen, data }: { open: boolean, setOpen
                             Fund Discourse
                         </Dialog.Title>
                         <Dialog.Description className="flex flex-col  w-full items-center  gap-4 text-center justify-between mt-4">
-                            <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>This is initial funding of the discourse required from creator. Need to fund min 1 {getCurrencyName(activeChain?.id!)}</p>
+                            <p className='text-[#c6c6c6] text-medium text-xs max-w-[40ch] flex-[1] '>This is initial funding of the discourse required from creator. Need to fund min 0.01 {getCurrencyName(activeChain?.id!)}</p>
                             <div className='flex flex-col items-center justify-center w-full gap-4'>
                                 <label htmlFor="amount" className='relative flex items-center'>
                                     <p className='absolute text-white m-auto inset-y-0 left-3 h-max'></p>

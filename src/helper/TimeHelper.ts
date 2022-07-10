@@ -40,7 +40,10 @@ export const formatDate = (date: Date) => {
     return day + ' ' + monthNames[monthIndex] + ' ' + year;
 }
 
-
+export const getDayFromDate = (date: Date) => {
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return dayNames[date.getDay()];
+}
 
 export const getTimeFromDate = (date: Date) => {
     const hours = date.getHours();

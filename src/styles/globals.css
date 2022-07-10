@@ -68,7 +68,7 @@
 
 
   .input-s {
-    @apply bg-[#141515]/50 px-4 py-2 rounded-lg border border-[#212427] text-white text-sm font-medium outline-none hover:ring-2 focus:border-[#84b9d1]/60 active:border-[#84b9d1] ring-[#84B9D1]/30 t-all;
+    @apply bg-[#141515]/50 px-4 py-2 rounded-lg border border-[#212427] text-white font-Lexend text-[14px] font-medium outline-none hover:ring-2 focus:border-[#84b9d1]/60 active:border-[#84b9d1] ring-[#84B9D1]/30 t-all;
   }
 
   .input-s-d {
@@ -85,4 +85,6 @@
   font-family: 'Montserrat', sans-serif;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
   /* font-family: 'Lexend', sans-serif; */
+  outline-color: #212427;
+  border-color: #212427;
 }

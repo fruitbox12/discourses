@@ -16,6 +16,7 @@ export const GET_DISCOURSES = gql`
                 username
                 address
                 confirmed
+                image_url
             }
             propId
             chainId
@@ -24,6 +25,7 @@ export const GET_DISCOURSES = gql`
             charityPercent
             initTS
             endTS
+            irl
             funds {
                 address
                 amount
@@ -45,6 +47,7 @@ export const GET_DISCOURSES = gql`
         }
     }
 `
+
 export const GET_DISCOURSES_BY_CHAIN = gql`
     query GetDiscourses($chainId: Int!) {
         getDiscoursesByChainID(chainId: $chainId) {
@@ -56,6 +59,7 @@ export const GET_DISCOURSES_BY_CHAIN = gql`
                 username
                 address
                 confirmed
+                image_url
             }
             propId
             chainId
@@ -64,6 +68,7 @@ export const GET_DISCOURSES_BY_CHAIN = gql`
             charityPercent
             initTS
             endTS
+            irl
             funds {
                 address
                 amount
@@ -98,6 +103,7 @@ export const GET_DISCOURSE_BY_ID = gql`
                 address
                 confirmed
                 isTwitterHandle
+                image_url
             }
             propId
             chainId
@@ -107,17 +113,12 @@ export const GET_DISCOURSE_BY_ID = gql`
             initTS
             endTS
             topics
+            irl
             funds {
                 address
                 amount
                 timestamp
                 txnHash
-            }
-            participants {
-                address
-                email
-                twitter_handle
-                timestamp
             }
             status {
                 disputed
@@ -216,6 +217,31 @@ export const GET_SESSIONS = gql`
             recordingStatus
             recordingUrl
             createdAt
+        }
+    }
+`
+
+export const CHECK_TITLE = gql`
+    query CheckTitle($title: String!) {
+        checkTitle(title: $title) 
+    }
+`
+
+export const GET_EVENT = gql`
+    query GetEvent($propId: Int!, $chainId: Int!) {
+        getEvent(propId: $propId, chainId: $chainId) {
+            discourseId
+            propId
+            chainId
+            eventTimestamp
+            venue {
+                name
+                address
+                city
+                zip
+                state
+                country
+            }
         }
     }
 `
